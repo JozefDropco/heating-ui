@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service %NODE_DEBUG_OPTION% serve --mode=local",
+    "serve": "vue-cli-service serve --mode=local",
     "build": "vue-cli-service build --mode=ceap2dev",
     "lint": "vue-cli-service lint"
   },
@@ -15,6 +15,7 @@
     "url-search-params-polyfill": "^5.0.0",
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
+    "vue-i18n": "^8.11.2",
     "vue-property-decorator": "^7.0.0",
     "vue-router": "^3.0.1"
   },

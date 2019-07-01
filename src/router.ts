@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Report from './views/ReportPage.vue'
+import ServiceMode from './views/ServiceMode.vue'
 import Empty from "./views/Empty.vue";
 
 Vue.use(Router)
@@ -8,10 +8,9 @@ Vue.use(Router)
 export default new Router({
     routes:[
         {
-            path: '/:reportRefCd',
+            path: '/ServiceMode',
             name: 'report',
-            component: Report,
-            props:true
+            component: ServiceMode
         },
         {
             path: '*',

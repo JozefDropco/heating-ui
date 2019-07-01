@@ -11,7 +11,7 @@
                     />
 
                     <q-toolbar-title>
-                        Recon Admin
+                        Inteligentný dom
                     </q-toolbar-title>
 
                 </q-toolbar>

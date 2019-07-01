@@ -1,6 +1,6 @@
 module.exports = {
     runtimeCompiler: false,
-    baseUrl: "/recon",
+    baseUrl: "",
     configureWebpack: {
         devtool: 'source-map'
     },
