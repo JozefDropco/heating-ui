@@ -149,7 +149,7 @@
         methods: {
             loadCurrentState() {
                 Loading.show();
-                axios.get(cfg.BASE_URL + "ws/watering")
+                axios.get(cfg.BASE_URL + "watering")
                     .then(response => {
                         this.tableData = response.data;
                         Loading.hide();

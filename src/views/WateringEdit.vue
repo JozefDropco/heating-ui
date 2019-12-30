@@ -40,7 +40,7 @@
         methods: {
             saveWatering: function () {
                 Loading.show();
-                axios.get(cfg.BASE_URL + "ws/watering/" + this.$route.params.wId)
+                axios.get(cfg.BASE_URL + "watering/" + this.$route.params.wId)
                     .then(response => {
                         var rec:any = {};
                         rec.name = this.name;
@@ -78,7 +78,7 @@
             },
             loadCurrentState() {
                 Loading.show();
-                axios.get(cfg.BASE_URL + "ws/watering/"+this.$route.params.wId)
+                axios.get(cfg.BASE_URL + "watering/"+this.$route.params.wId)
                     .then(response => {
                         var rec = response.data;
                         this.name  =rec.name;

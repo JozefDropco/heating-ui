@@ -58,7 +58,7 @@
         methods: {
             loadCurrentState() {
                 Loading.show();
-                axios.get(cfg.BASE_URL + "ws/serviceMode")
+                axios.get(cfg.BASE_URL + "serviceMode")
                     .then(response => {
                         this.state = response.data.state;
                         Loading.hide();
@@ -67,7 +67,7 @@
                         Loading.hide();
                         alert(error)
                     });
-                axios.get(cfg.BASE_URL + "ws/port/outputs")
+                axios.get(cfg.BASE_URL + "port/outputs")
                     .then(response => {
                         this.outputPins.splice(0);
                         for (let i = 0; i < response.data.length; i++)
@@ -82,7 +82,7 @@
                         Loading.hide();
                         alert(error)
                     });
-                axios.get(cfg.BASE_URL + "ws/port/inputs")
+                axios.get(cfg.BASE_URL + "port/inputs")
                     .then(response => {
                         this.inputPins.splice(0);
                         for (let i = 0; i < response.data.length; i++)
@@ -100,7 +100,7 @@
             },
             handleStateChange() {
                 Loading.show();
-                axios.post(cfg.BASE_URL + "ws/serviceMode?state=" + this.state)
+                axios.post(cfg.BASE_URL + "serviceMode?state=" + this.state)
                     .then(response => {
                         this.state = response.data.state;
                         Loading.hide();
@@ -112,7 +112,7 @@
             },
             toggleOutputState(output: any) {
                 Loading.show();
-                axios.post(cfg.BASE_URL + "ws/output/" + output.key, output.value, {
+                axios.post(cfg.BASE_URL + "output/" + output.key, output.value, {
                     headers: {
                         'Content-Type': 'application/json'
                     }
