@@ -1,6 +1,41 @@
 <template>
-    <div>
-        <q-toggle class="q-ml-xm" v-model="state" label="Stav servisného modu" />
+    <div class="marginLeft5rem marginTop5rem">
+        <q-toggle v-model="state" :label="$t('serviceModeState')"/>
+        <div v-if="state">
+            <br/>
+            <br/>
+            <q-card inline class="marginLeft5rem">
+                <q-card-title>
+                    {{$t('serviceModeInputs')}}
+                </q-card-title>
+                <q-card-separator/>
+                <q-card-main>
+                    <div v-for="(input,idx) in inputPins" :key="idx">
+                        <q-toggle class="paddingBottom" v-model="input.value" disable="true"
+                                  :label="input.name"/>
+                    </div>
+                </q-card-main>
+            </q-card>
+            <q-card inline class="marginLeft5rem">
+                <q-card-title>
+                    {{$t('serviceModeOutputs')}}
+                </q-card-title>
+                <q-card-separator/>
+                <q-card-main>
+                    <div v-for="(output,idx) in outputPins" :key="idx">
+                        <q-toggle class="paddingBottom" v-model="output.value" @input="toggleOutputState(output)"
+                                  :label="output.name"/>
+                    </div>
+                </q-card-main>
+            </q-card>
+            <q-btn class="marginLeft5rem"
+                    round
+                    icon="refresh"
+                    color="primary"
+                    @click="loadCurrentState"
+            >
+            </q-btn>
+        </div>
     </div>
 </template>
 
@@ -16,6 +51,8 @@
         data() {
             return {
                 state: false,
+                outputPins: [],
+                inputPins: []
             }
         },
         methods: {
@@ -30,10 +67,56 @@
                         Loading.hide();
                         alert(error)
                     });
+                axios.get(cfg.BASE_URL + "ws/port/outputs")
+                    .then(response => {
+                        this.outputPins.splice(0);
+                        for (let i = 0; i < response.data.length; i++)
+                            this.outputPins.push({
+                                'refcd': response.data[i].refcd,
+                                'name': response.data[i].name,
+                                'value': response.data[i].value === 'true'
+                            });
+                        Loading.hide();
+                    })
+                    .catch(error => {
+                        Loading.hide();
+                        alert(error)
+                    });
+                axios.get(cfg.BASE_URL + "ws/port/inputs")
+                    .then(response => {
+                        this.inputPins.splice(0);
+                        for (let i = 0; i < response.data.length; i++)
+                            this.inputPins.push({
+                                'refcd': response.data[i].refcd,
+                                'name': response.data[i].name,
+                                'value': response.data[i].value === 'true'
+                            });
+                        Loading.hide();
+                    })
+                    .catch(error => {
+                        Loading.hide();
+                        alert(error)
+                    });
             },
-            handleStateChange(){
+            handleStateChange() {
                 Loading.show();
-                axios.post(cfg.BASE_URL + "ws/serviceMode?state="+this.state)
+                axios.post(cfg.BASE_URL + "ws/serviceMode?state=" + this.state)
+                    .then(response => {
+                        this.state = response.data.state;
+                        Loading.hide();
+                    })
+                    .catch(error => {
+                        Loading.hide();
+                        alert(error)
+                    });
+            },
+            toggleOutputState(output: any) {
+                Loading.show();
+                axios.post(cfg.BASE_URL + "ws/output/" + output.key, output.value, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
                     .then(response => {
                         this.state = response.data.state;
                         Loading.hide();
@@ -58,6 +141,16 @@
     .heading {
         font-size: large;
         font-weight: bold;
+    }
+
+    .marginLeft5rem {
+        margin-left: 0.5rem;
+    }
+    .marginTop5rem {
+        margin-top: 0.5rem;
+    }
+    .paddingBottom {
+        padding-bottom: 0.5rem;
     }
 
     .window {
