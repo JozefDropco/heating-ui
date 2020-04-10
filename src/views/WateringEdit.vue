@@ -1,13 +1,13 @@
 <template>
     <div class="marginLeft5rem marginTop5rem">
-        <q-checkbox v-model="active" :label="$t('wateringActive')" />
-        <q-input v-model="zoneRefCode" :stack-label="$t('wateringZoneRefCd')" />
-        <q-input v-model="name" :stack-label="$t('wateringName')" />
-        <q-input v-model="modulo" type="number" :stack-label="$t('wateringModulo')" />
-        <q-input v-model="reminder" type="number" :stack-label="$t('wateringReminder')" />
-        <q-input v-model="timeInSeconds" type="time" :stack-label="$t('wateringDuration')" />
-        <q-input v-model="time" type="time" :stack-label="$t('wateringTime')"/>
-        <q-input v-model="retryTime" type="time" :stack-label="$t('wateringRetryTime')"/>
+        <q-checkbox v-model="active" :label="$t('wateringActive')"/>
+        <q-input v-model="zoneRefCode" :stack-label="$t('wateringZoneRefCd')"/>
+        <q-input v-model="name" :stack-label="$t('wateringName')"/>
+        <q-input v-model="modulo" type="number" :stack-label="$t('wateringModulo')"/>
+        <q-input v-model="reminder" type="number" :stack-label="$t('wateringReminder')"/>
+        <q-input v-model="timeInSeconds" :stack-label="$t('wateringDuration')"/>
+        <q-input v-model="time" :stack-label="$t('wateringTime')"/>
+        <q-input v-model="retryTime" :stack-label="$t('wateringRetryTime')"/>
         <br/>
         <q-btn icon="save" :label="$t('save')" @click="saveWatering"/>
     </div>
@@ -15,61 +15,46 @@
 
 <script lang="ts">
     import {Vue} from 'vue-property-decorator';
-    import {Loading} from 'quasar';
+    import {date, Loading} from 'quasar';
     import cfg from "../heating-config";
     import axios from 'axios';
-    import i18n from "../I18n";
 
     require('url-search-params-polyfill');
+
+    let staticDate = new Date(2017, 2, 7, 0, 0, 0, 0);
 
     export default Vue.extend({
         data() {
             return {
-                reminder:0,
-                modulo:1,
-                time:null,
-                zoneRefCode:"",
-                timeInSeconds:null,
-                retryTime:null,
-                active:true,
-                name:""
-        }
+                reminder: 0,
+                modulo: 1,
+                time: null,
+                zoneRefCode: "",
+                timeInSeconds: null,
+                retryTime: null,
+                active: true,
+                name: ""
+            }
         },
-        computed: {
-        },
+        computed: {},
         methods: {
             saveWatering: function () {
                 Loading.show();
-                axios.get(cfg.BASE_URL + "watering/" + this.$route.params.wId)
-                    .then(response => {
-                        var rec:any = {};
-                        rec.name = this.name;
-                        rec.zoneRefCode = this.zoneRefCode;
-                        rec.timeInSeconds = this.timeInSeconds;
-                        rec.active = this.active;
-                        rec.modulo = this.modulo;
-                        rec.reminder = this.reminder;
-                        var rem = rec.timeInSeconds;
-                        var seconds = rem % 60;
-                        rem -= seconds;
-                        rem = rem / 60;
-                        if (rem === 0) return seconds + 's';
-                        var minutes = rem % (60);
-                        rem -= minutes;
-                        rem = rem / 60;
-                        this.timeInSeconds = rem.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
-                        this.time = rec.hour.toString().padStart(2, '0') + ":" + rec.minute.toString().padStart(2, '0');
-                        if (rec.retryHour !== undefined)
-                            if (rec.retryMinute !== undefined) {
-                                this.retryTime = rec.retryHour.toString().padStart(2, '0') + ':' + rec.retryMinute.toString().padStart(2, '0');
-                            } else {
-                                this.retryTime = rec.retryHour.toString().padStart(2, '0') + ':' + rec.minute.toString().padStart(2, '0');
-                            }
-                        else if (rec.retryMinute !== undefined) {
-                            this.retryTime = rec.hour.toString().padStart(2, '0') + ':' + rec.retryMinute.toString().padStart(2, '0');
-                        } else this.retryTime = null;
-                        Loading.hide();
-                    })
+                var rec: any = {};
+                rec.id = this.$route.params.wId;
+                rec.name = this.name;
+                rec.zoneRefCode = this.zoneRefCode;
+                rec.active = this.active;
+                rec.modulo = this.modulo;
+                rec.reminder = this.reminder;
+                rec.timeInSeconds = parseInt(this.timeInSeconds.split(":")[0])*60+parseInt(this.timeInSeconds.split(":")[1]);
+                rec.hour = parseInt(this.time.split(":")[0]);
+                rec.minute = parseInt(this.time.split(":")[1]);
+                rec.retryHour = (this.retryTime === null ? null : parseInt(this.retryTime.split(":")[0]));
+                rec.retryMinute = (this.retryTime === null ? null :  parseInt(this.retryTime.split(":")[1]));
+                axios.put(cfg.BASE_URL + "watering/" + this.$route.params.wId, rec).then(response => {
+                    Loading.hide();
+                })
                     .catch(error => {
                         Loading.hide();
                         alert(error)
@@ -78,34 +63,32 @@
             },
             loadCurrentState() {
                 Loading.show();
-                axios.get(cfg.BASE_URL + "watering/"+this.$route.params.wId)
+                axios.get(cfg.BASE_URL + "watering/" + this.$route.params.wId)
                     .then(response => {
                         var rec = response.data;
-                        this.name  =rec.name;
+                        this.name = rec.name;
                         this.zoneRefCode = rec.zoneRefCode;
                         this.timeInSeconds = rec.timeInSeconds;
                         this.active = rec.active;
                         this.modulo = rec.modulo;
                         this.reminder = rec.reminder;
-                        var rem = rec.timeInSeconds;
-                        var seconds = rem % 60;
-                        rem -= seconds;
-                        rem = rem / 60;
-                        if (rem === 0) return seconds + 's';
-                        var minutes = rem % (60);
-                        rem -= minutes;
-                        rem = rem / 60;
-                        this.timeInSeconds = rem.toString().padStart(2, '0')+':'+minutes.toString().padStart(2, '0')+':'+seconds.toString().padStart(2, '0');
-                        this.time = rec.hour.toString().padStart(2, '0') +":"+rec.minute.toString().padStart(2, '0');
-                        if (rec.retryHour !== undefined)
-                            if (rec.retryMinute !== undefined) {
-                                this.retryTime=rec.retryHour.toString().padStart(2, '0') + ':' + rec.retryMinute.toString().padStart(2, '0');
-                            } else {
-                                this.retryTime=rec.retryHour.toString().padStart(2, '0') + ':' + rec.minute.toString().padStart(2, '0');
+                        this.timeInSeconds = date.formatDate(date.addToDate(staticDate, {seconds: rec.timeInSeconds}), 'mm:ss');
+                        this.time = date.formatDate(date.addToDate(staticDate, {
+                            hours: rec.hour,
+                            minutes: rec.minute
+                        }), 'HH:mm');
+                        if (rec.retryHour !== undefined || rec.retryMinute !== undefined) {
+                            if (rec.retryHour !== undefined) {
+                                rec.retryHour = rec.hour;
                             }
-                        else if (rec.retryMinute !== undefined) {
-                            this.retryTime=rec.hour.toString().padStart(2, '0') + ':' + rec.retryMinute.toString().padStart(2, '0');
-                        } else this.retryTime=null;
+                            if (rec.retryMinute !== undefined) {
+                                rec.retryMinute = rec.minute;
+                            }
+                            this.retryTime = date.formatDate(date.addToDate(staticDate, {
+                                hours: rec.retryHour,
+                                minutes: rec.retryMinute
+                            }), 'HH:mm');
+                        }
                         Loading.hide();
                     })
                     .catch(error => {
