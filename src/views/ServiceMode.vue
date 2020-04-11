@@ -112,7 +112,7 @@
             },
             toggleOutputState(output: any) {
                 Loading.show();
-                axios.post(cfg.BASE_URL + "output/" + output.refcd, output.value, {
+                axios.post(cfg.BASE_URL + "port/output/" + output.refcd, output.value, {
                     headers: {
                         'Content-Type': 'application/json'
                     }
