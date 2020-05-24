@@ -118,7 +118,7 @@
                     }
                 })
                     .then(response => {
-                        this.state = response.data.state;
+                        //TODO: fix
                         Loading.hide();
                     })
                     .catch(error => {
