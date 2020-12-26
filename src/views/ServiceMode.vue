@@ -121,7 +121,7 @@ require('url-search-params-polyfill');
                         for (let i = 0; i < response.data.length; i++){
                           for (let j=0; j< this.outputPins.length; j++){
                              if (this.outputPins[j].refcd===response.data[i]) {
-                               this.outputPins[i].value = false;
+                               this.outputPins[j].value = false;
                              }
                           }
                         }
