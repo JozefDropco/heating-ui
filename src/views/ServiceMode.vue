@@ -40,12 +40,12 @@
 </template>
 
 <script lang="ts">
-    import {Vue} from 'vue-property-decorator';
-    import {Loading} from 'quasar';
-    import cfg from "../heating-config";
-    import axios from 'axios';
+import {Vue} from 'vue-property-decorator';
+import {Loading} from 'quasar';
+import cfg from "../heating-config";
+import axios from 'axios';
 
-    require('url-search-params-polyfill');
+require('url-search-params-polyfill');
 
     export default Vue.extend({
         data() {
@@ -118,7 +118,13 @@
                     }
                 })
                     .then(response => {
-                        //TODO: fix
+                        for (let i = 0; i < response.data.length; i++){
+                          for (let j=0; j< this.outputPins.length; j++){
+                             if (this.outputPins[j].refcd===response.data[i]) {
+                               this.outputPins[i].value = false;
+                             }
+                          }
+                        }
                         Loading.hide();
                     })
                     .catch(error => {
