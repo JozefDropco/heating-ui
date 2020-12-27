@@ -4,6 +4,7 @@ import ServiceMode from './views/ServiceMode.vue'
 import Watering from './views/Watering.vue'
 import Empty from "./views/Empty.vue";
 import WateringEdit from "@/views/WateringEdit.vue";
+import Temperature from "@/views/Temperature.vue";
 
 Vue.use(Router)
 
@@ -18,6 +19,11 @@ export default new Router({
             path: '/Watering',
             name: 'watering',
             component: Watering
+        },
+        {
+            path: '/Temperature',
+            name: 'temperature',
+            component: Temperature
         },
         {
             path: '/Watering/:wId',

@@ -3,6 +3,7 @@
         <q-list-header>{{$t('menu')}}</q-list-header>
         <q-item to="/ServiceMode">{{$t('menu_serviceMenu')}}</q-item>
         <q-item to="/Watering">{{$t('menu_wateringMenu')}}</q-item>
+        <q-item to="/Temperature">{{$t('menu_temperatureMenu')}}</q-item>
     </q-list>
 
 

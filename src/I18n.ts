@@ -1,8 +1,10 @@
 import Vue from 'vue'
 
 import VueI18n from 'vue-i18n'
-
+import VueApexCharts from 'vue-apexcharts'
+Vue.use(VueApexCharts)
 Vue.use(VueI18n)
+Vue.component('apexchart', VueApexCharts)
 
 export default new VueI18n({
     locale: 'sk',
@@ -24,6 +26,8 @@ export default new VueI18n({
             wateringTime:'1. čas polievania',
             wateringRetryTime:'2. pokus o polievanie',
             wateringDuration:'Dĺžka polievania',
+            temperature:'Teplota',
+            menu_temperatureMenu:'Teploty',
             save:'Uložiť'
         },
         en: {
@@ -41,7 +45,9 @@ export default new VueI18n({
             wateringReminder:'Day within cycle',
             wateringTime:'1st watering time',
             wateringRetryTime:'Retry time',
-            wateringDuration:'Dĺžka polievania',
+            wateringDuration:'Watering duration',
+            temperature:'Temperature',
+            menu_temperatureMenu:'Temperatures',
             save:'Save'
         }
     }
