@@ -1,15 +1,32 @@
 <template>
-  <div>
-    <div class="marginLeft5rem marginTop5rem">
-      <apexchart width="800" height="500" type="line" :options="options" :series="series"></apexchart>
-    </div>
+  <div style="margin-top: 20px">
     <div class="row">
-      <div class="col-12 q-pl-lg q-pb-lg">
+      <div class="col-6 q-pl-lg q-pb-lg">
+        <div class="row">
+          <div class="col-6 q-pl-lg q-pb-lg">
+            <q-datetime float-label="Od dátumu" v-model="fromDate" type="date"/>
+          </div>
+          <div class="col-6 q-pl-lg q-pb-lg">
+            <q-datetime float-label="Do dátumu" v-model="toDate" type="date"/>
+          </div>
+        </div>
+        <apexchart width="800" height="500" type="line" :options="options" :series="series"></apexchart>
+      </div>
+      <div class="col-6 q-pl-lg q-pb-lg" >
         <q-table ref="table" color="primary" dense title="Meracie miesta"
-                 :data="data" :columns="columns">
+                 :data="data" :columns="columns" style="margin-right: 5px">
+          <template slot="top-right" slot-scope="props">
+            <q-btn
+                flat round
+                icon="add"
+                label="Pridať"
+            />
+          </template>
         </q-table>
       </div>
     </div>
+
+
   </div>
 </template>
 
@@ -25,6 +42,8 @@ export default Vue.extend({
   data() {
     return {
       series: [],
+      fromDate: new Date(),
+      toDate: new Date(),
       options: {
         chart: {
           type: 'line',
@@ -104,7 +123,11 @@ export default Vue.extend({
   methods: {
     loadCurrentState() {
       Loading.show();
-      axios.get(cfg.BASE_URL + "temp")
+      var fromValue = this.fromDate.toISOString().slice(0, 10);
+      let date = new Date(this.toDate);
+      date.setDate(date.getDate() + 1);
+      var toValue = date.toISOString().slice(0, 10);
+      axios.get(cfg.BASE_URL + "temp?from=" + fromValue + "&to=" + toValue)
           .then(response => {
             this.series = response.data;
             Loading.hide();
@@ -125,6 +148,9 @@ export default Vue.extend({
     }
   },
   mounted(): void {
+    let date = new Date();
+    date.setDate(this.fromDate.getDate() - 7);
+    this.fromDate = date;
     this.loadCurrentState();
   }
 });

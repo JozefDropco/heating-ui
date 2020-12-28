@@ -28,13 +28,6 @@
                     </div>
                 </q-card-main>
             </q-card>
-            <q-btn class="marginLeft5rem"
-                    round
-                    icon="refresh"
-                    color="primary"
-                    @click="loadCurrentState"
-            >
-            </q-btn>
         </div>
     </div>
 </template>
@@ -140,6 +133,7 @@ require('url-search-params-polyfill');
         },
         mounted(): void {
             this.loadCurrentState();
+            setInterval(this.loadCurrentState,1000);
         }
     })
 </script>
