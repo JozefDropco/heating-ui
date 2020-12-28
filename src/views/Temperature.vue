@@ -81,7 +81,8 @@ export default Vue.extend({
           align: 'left',
           field: 'name',
           sortable: true
-        }, {
+        },
+        {
           name: 'REF_CD',
           required: true,
           label: 'Unikátny kľúč',
