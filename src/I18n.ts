@@ -28,6 +28,7 @@ export default new VueI18n({
             wateringDuration:'Dĺžka polievania',
             temperature:'Teplota',
             menu_temperatureMenu:'Teploty',
+            menu_solarMenu:'Solár',
             save:'Uložiť'
         },
         en: {
@@ -48,6 +49,7 @@ export default new VueI18n({
             wateringDuration:'Watering duration',
             temperature:'Temperature',
             menu_temperatureMenu:'Temperatures',
+            menu_solarMenu:'Solar',
             save:'Save'
         }
     }

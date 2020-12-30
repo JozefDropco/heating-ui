@@ -16,7 +16,7 @@
 
                 </q-toolbar>
             </q-layout-header>
-            <q-layout-drawer :overlay=false width="150" :value="menuShown" side="left">
+            <q-layout-drawer :overlay=false :width="150" :value="menuShown" side="left">
                 <left-menu></left-menu>
             </q-layout-drawer>
 

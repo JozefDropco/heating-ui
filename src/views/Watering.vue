@@ -11,8 +11,8 @@
                 row-key="id"
         >
             <template slot="top-right" slot-scope="props">
-                <q-btn icon="edit" label="Edit" @click="editWatering" />
-                <q-btn icon="add" label="Add" @click="addWatering" />
+                <q-btn icon="edit" label="Upraviť" @click="editWatering" />
+                <q-btn icon="add" label="Pridať" @click="addWatering" />
             </template>
         </q-table>
     </div>

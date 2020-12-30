@@ -4,6 +4,13 @@ module.exports = {
     configureWebpack: {
         devtool: 'source-map'
     },
+    devServer: {
+        proxy: {
+            '/ws':{
+                target: 'http://localhost:8080'
+            }
+        }
+    },
     pluginOptions: {
         quasar: {
             theme: 'mat',

@@ -50,6 +50,7 @@ require('url-search-params-polyfill');
         },
         methods: {
             loadCurrentState() {
+              if (this.state===false) return;
                 Loading.show();
                 axios.get(cfg.BASE_URL + "serviceMode")
                     .then(response => {

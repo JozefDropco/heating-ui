@@ -5,6 +5,7 @@ import Watering from './views/Watering.vue'
 import Empty from "./views/Empty.vue";
 import WateringEdit from "@/views/WateringEdit.vue";
 import Temperature from "@/views/Temperature.vue";
+import Solar from "@/views/Solar.vue";
 
 Vue.use(Router)
 
@@ -19,6 +20,11 @@ export default new Router({
             path: '/Watering',
             name: 'watering',
             component: Watering
+        },
+        {
+            path: '/Solar',
+            name: 'solar',
+            component: Solar
         },
         {
             path: '/Temperature',

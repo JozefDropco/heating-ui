@@ -1,7 +1,7 @@
 <template>
   <div style="margin-top: 20px">
     <div class="row">
-      <div class="col-6 q-pl-lg q-pb-lg">
+      <div class="q-pl-lg q-pb-lg" style="min-width: 800px;">
         <div class="row">
           <div class="col-6 q-pl-lg q-pb-lg">
             <q-datetime float-label="Od dátumu" v-model="fromDate" type="date"/>
@@ -10,22 +10,73 @@
             <q-datetime float-label="Do dátumu" v-model="toDate" type="date"/>
           </div>
         </div>
-        <apexchart width="800" height="500" type="line" :options="options" :series="series"></apexchart>
+        <apexchart type="line" :options="options" :series="series"></apexchart>
       </div>
-      <div class="col-6 q-pl-lg q-pb-lg" >
-        <q-table ref="table" color="primary" dense title="Meracie miesta"
+      <div class="q-pl-lg q-pb-lg">
+        <q-table color="primary" dense title="Meracie miesta"
+                 :selected.sync="selected"
+                 selection="single"
+                 row-key="refCd"
                  :data="data" :columns="columns" style="margin-right: 5px">
           <template slot="top-right" slot-scope="props">
             <q-btn
-                flat round
-                icon="add"
-                label="Pridať"
+                   icon="delete"
+                   :disable="selected.length===0"
+                   label="Vymazať"
+                   @click="deleteMeasurePlace"
+            /> <q-btn :disable="freeDeviceIds.length===0"
+                   icon="add"
+                   label="Pridať"
+                   @click="addPopupDisplayed = true"
             />
           </template>
+          <q-tr slot="body" slot-scope="props" :props="props">
+            <q-td auto-width>
+              <q-checkbox dense v-model="props.selected" />
+            </q-td>
+            <q-td key="name" :props="props">
+              {{ props.row.name }}
+              <q-popup-edit v-model="props.row.name"  ref="editName" title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť" @save="(v,iv)=>editMeasureplace(props.row)">
+                <q-input float-label="Pomenovanie" v-model="props.row.name"/>
+              </q-popup-edit>
+            </q-td>
+            <q-td key="refCd" :props="props">{{ props.row.refCd }}</q-td>
+            <q-td key="deviceId" :props="props">
+              {{ props.row.deviceId }}
+              <q-popup-edit v-model="props.row" title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť" @save="(v,iv)=>editMeasureplace(props.row,)">
+                <q-select stack-label="ID zariadenia" :options="freeDeviceIds" v-model="props.row.deviceId"/>
+              </q-popup-edit>
+            </q-td>
+          </q-tr>
         </q-table>
       </div>
     </div>
+    <q-modal v-model="addPopupDisplayed">
+      <q-modal-layout>
+        <q-toolbar slot="header">
+          <q-toolbar-title>
+            Pridať meracie miesto
+          </q-toolbar-title>
+        </q-toolbar>
+        <div class="layout-padding">
+          <q-input stack-label="Meno" :value="name"/>
+          <q-select stack-label="ID zariadenia" :options="freeDeviceIds" :value="name"/>
+          <br/>
+          <q-btn
+              color="primary"
+              v-close-overlay
+              label="Uložiť"
+              @click="saveMeasureplace()"
+          />
+          <q-btn
+              color="primary"
+              v-close-overlay
+              label="Zavrieť"
+          />
 
+        </div>
+      </q-modal-layout>
+    </q-modal>
 
   </div>
 </template>
@@ -41,6 +92,12 @@ require('url-search-params-polyfill');
 export default Vue.extend({
   data() {
     return {
+      name: "",
+      refCd: "",
+      deviceId: "",
+      selected:[],
+      freeDeviceIds: [],
+      addPopupDisplayed: false,
       series: [],
       fromDate: new Date(),
       toDate: new Date(),
@@ -83,7 +140,7 @@ export default Vue.extend({
           maxHeight: 120
         },
         legend: {
-          position: 'left'
+          position: 'top'
         },
         tooltip: {
           x: {
@@ -94,23 +151,20 @@ export default Vue.extend({
       },
       columns: [
         {
-          name: 'Meno',
-          required: true,
+          name: 'name',
           label: 'Pomenovanie meracieho miesta',
           align: 'left',
           field: 'name',
           sortable: true
         },
         {
-          name: 'REF_CD',
-          required: true,
+          name: 'refCd',
           label: 'Unikátny kľúč',
           align: 'left',
           field: 'refCd',
           sortable: true
         }, {
-          name: 'Číslo zariadenia',
-          required: true,
+          name: 'deviceId',
           label: 'ID zariadenia',
           align: 'left',
           field: 'deviceId',
@@ -143,6 +197,45 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
+            alert(error)
+          });
+      axios.get(cfg.BASE_URL + "temp/freeDeviceIds")
+          .then(response => {
+            this.freeDeviceIds = response.data;
+            Loading.hide();
+          })
+          .catch(error => {
+            Loading.hide();
+            alert(error)
+          });
+    },
+    saveMeasureplace() {
+      let data: any = {};
+      data['name'] = this.name;
+      data['deviceId'] = this.deviceId;
+      axios.post(cfg.BASE_URL + "temp/measurePlace", data, {method: "post"})
+          .then(response => {
+            this.loadCurrentState();
+          })
+          .catch(error => {
+            alert(error)
+          });
+    },
+    editMeasureplace(row:any) {
+      axios.put(cfg.BASE_URL + "temp/measurePlace/"+row.refCd, row, {method: "PUT"})
+          .then(response => {
+            this.loadCurrentState();
+          })
+          .catch(error => {
+            alert(error)
+          });
+    },
+    deleteMeasurePlace(){
+      axios.delete(cfg.BASE_URL + "temp/measurePlace/"+this.selected[0].refCd)
+          .then(response => {
+            this.loadCurrentState();
+          })
+          .catch(error => {
             alert(error)
           });
     }
