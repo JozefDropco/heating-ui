@@ -47,6 +47,7 @@ import axios from 'axios';
 export default Vue.extend({
   data() {
     return {
+      refreshIntervalId:null,
       tempSeries: [],
       tempOptions: {
         chart: {
@@ -252,6 +253,7 @@ export default Vue.extend({
           });
       axios.get(cfg.BASE_URL + "solar/currentPosition")
           .then(response => {
+            this.posSeries.splice(0);
             var series:any=new Object();
             series['name']= "Aktuálna pozícia";
             series['data']= [response.data];
@@ -269,6 +271,10 @@ export default Vue.extend({
     date.setDate(this.fromDate.getDate() - 7);
     this.fromDate = date;
     this.loadCurrentState();
+    this.refreshIntervalId = setInterval(this.loadCurrentState, 5000);
+  },
+  beforeDestroy() {
+    clearInterval(this.refreshIntervalId);
   }
 });
 </script>
