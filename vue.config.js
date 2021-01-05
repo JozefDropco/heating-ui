@@ -22,9 +22,9 @@ module.exports = {
     //         .conrule('vue')
     //         .use('vue-loader')
     //         .loader('vue-loader')
-    //         .tap(options => {
-    //             // modify the options...
-    //             return options
+    //         .tap(tempOptions => {
+    //             // modify the tempOptions...
+    //             return tempOptions
     //         })
     // },
     transpileDependencies: [

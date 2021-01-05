@@ -1,56 +1,45 @@
 <template>
   <div style="margin-top: 20px">
-    <div class="row">
-      <div class="q-pl-lg q-pb-lg" style="min-width: 800px;">
-        <div class="row">
-          <div class="col-6 q-pl-lg q-pb-lg">
-            <q-datetime float-label="Od dátumu" v-model="fromDate" type="date"/>
-          </div>
-          <div class="col-6 q-pl-lg q-pb-lg">
-            <q-datetime float-label="Do dátumu" v-model="toDate" type="date"/>
-          </div>
-        </div>
-        <apexchart type="line" :options="options" :series="series"></apexchart>
-      </div>
-      <div class="q-pl-lg q-pb-lg">
-        <q-table color="primary" dense title="Meracie miesta"
-                 :selected.sync="selected"
-                 selection="single"
-                 row-key="refCd"
-                 :data="data" :columns="columns" style="margin-right: 5px">
-          <template slot="top-right" slot-scope="props">
-            <q-btn
-                   icon="delete"
-                   :disable="selected.length===0"
-                   label="Vymazať"
-                   @click="deleteMeasurePlace"
-            /> <q-btn :disable="freeDeviceIds.length===0"
-                   icon="add"
-                   label="Pridať"
-                   @click="addPopupDisplayed = true"
-            />
-          </template>
-          <q-tr slot="body" slot-scope="props" :props="props">
-            <q-td auto-width>
-              <q-checkbox dense v-model="props.selected" />
-            </q-td>
-            <q-td key="name" :props="props">
-              {{ props.row.name }}
-              <q-popup-edit v-model="props.row.name"  ref="editName" title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť" @save="(v,iv)=>editMeasureplace(props.row)">
-                <q-input float-label="Pomenovanie" v-model="props.row.name"/>
-              </q-popup-edit>
-            </q-td>
-            <q-td key="refCd" :props="props">{{ props.row.refCd }}</q-td>
-            <q-td key="deviceId" :props="props">
-              {{ props.row.deviceId }}
-              <q-popup-edit v-model="props.row" title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť" @save="(v,iv)=>editMeasureplace(props.row,)">
-                <q-select stack-label="ID zariadenia" :options="freeDeviceIds" v-model="props.row.deviceId"/>
-              </q-popup-edit>
-            </q-td>
-          </q-tr>
-        </q-table>
-      </div>
-    </div>
+
+    <q-table color="primary" dense title="Meracie miesta"
+             :selected.sync="selected"
+             selection="single"
+             row-key="refCd"
+             :data="data" :columns="columns">
+      <template slot="top-right" slot-scope="props">
+        <q-btn
+            icon="delete"
+            :disable="selected.length===0"
+            label="Vymazať"
+            @click="deleteMeasurePlace"
+        />
+        <q-btn :disable="freeDeviceIds.length===0"
+               icon="add"
+               label="Pridať"
+               @click="addPopupDisplayed = true"
+        />
+      </template>
+      <q-tr slot="body" slot-scope="props" :props="props">
+        <q-td auto-width>
+          <q-checkbox dense v-model="props.selected"/>
+        </q-td>
+        <q-td key="name" :props="props">
+          {{ props.row.name }}
+          <q-popup-edit v-model="props.row.name" ref="editName" title="Upraviť" buttons label-set="Uložiť"
+                        label-cancel="Zavrieť" @save="(v,iv)=>editMeasureplace(props.row)">
+            <q-input float-label="Pomenovanie" v-model="props.row.name"/>
+          </q-popup-edit>
+        </q-td>
+        <q-td key="refCd" :props="props">{{ props.row.refCd }}</q-td>
+        <q-td key="deviceId" :props="props">
+          {{ props.row.deviceId }}
+          <q-popup-edit v-model="props.row" title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
+                        @save="(v,iv)=>editMeasureplace(props.row,)">
+            <q-select stack-label="ID zariadenia" :options="freeDeviceIds" v-model="props.row.deviceId"/>
+          </q-popup-edit>
+        </q-td>
+      </q-tr>
+    </q-table>
     <q-modal v-model="addPopupDisplayed">
       <q-modal-layout>
         <q-toolbar slot="header">
@@ -87,7 +76,6 @@ import {Loading} from 'quasar';
 import cfg from "../heating-config";
 import axios from 'axios';
 
-require('url-search-params-polyfill');
 
 export default Vue.extend({
   data() {
@@ -95,12 +83,10 @@ export default Vue.extend({
       name: "",
       refCd: "",
       deviceId: "",
-      selected:[],
+      selected: [],
       freeDeviceIds: [],
       addPopupDisplayed: false,
-      series: [],
-      fromDate: new Date(),
-      toDate: new Date(),
+      tempSeries: [],
       options: {
         chart: {
           type: 'line',
@@ -149,6 +135,8 @@ export default Vue.extend({
           },
         }
       },
+      fromDate: new Date(),
+      toDate: new Date(),
       columns: [
         {
           name: 'name',
@@ -177,19 +165,6 @@ export default Vue.extend({
   methods: {
     loadCurrentState() {
       Loading.show();
-      var fromValue = this.fromDate.toISOString().slice(0, 10);
-      let date = new Date(this.toDate);
-      date.setDate(date.getDate() + 1);
-      var toValue = date.toISOString().slice(0, 10);
-      axios.get(cfg.BASE_URL + "temp?from=" + fromValue + "&to=" + toValue)
-          .then(response => {
-            this.series = response.data;
-            Loading.hide();
-          })
-          .catch(error => {
-            Loading.hide();
-            alert(error)
-          })
       axios.get(cfg.BASE_URL + "temp/measurePlace")
           .then(response => {
             this.data = response.data;
@@ -221,8 +196,8 @@ export default Vue.extend({
             alert(error)
           });
     },
-    editMeasureplace(row:any) {
-      axios.put(cfg.BASE_URL + "temp/measurePlace/"+row.refCd, row, {method: "PUT"})
+    editMeasureplace(row: any) {
+      axios.put(cfg.BASE_URL + "temp/measurePlace/" + row.refCd, row, {method: "PUT"})
           .then(response => {
             this.loadCurrentState();
           })
@@ -230,8 +205,8 @@ export default Vue.extend({
             alert(error)
           });
     },
-    deleteMeasurePlace(){
-      axios.delete(cfg.BASE_URL + "temp/measurePlace/"+this.selected[0].refCd)
+    deleteMeasurePlace() {
+      axios.delete(cfg.BASE_URL + "temp/measurePlace/" + this.selected[0].refCd)
           .then(response => {
             this.loadCurrentState();
           })

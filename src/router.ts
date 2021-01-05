@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import ServiceMode from './views/ServiceMode.vue'
 import Watering from './views/Watering.vue'
-import Empty from "./views/Empty.vue";
+import Dashboard from "./views/Dashboard.vue";
 import WateringEdit from "@/views/WateringEdit.vue";
 import Temperature from "@/views/Temperature.vue";
 import Solar from "@/views/Solar.vue";
@@ -40,7 +40,7 @@ export default new Router({
         {
             path: '*',
             name: 'empty',
-            component: Empty
+            component: Dashboard
         }
     ]
 })
