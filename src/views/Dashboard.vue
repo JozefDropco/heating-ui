@@ -99,6 +99,7 @@ export default Vue.extend({
       },
       enoughLight: false,
       strongWind: false,
+      lastDate:null,
       posSeries: [],
       posOptions: {
         chart: {
@@ -226,7 +227,8 @@ export default Vue.extend({
       var toValue = date.toISOString().slice(0, 10);
       axios.get(cfg.BASE_URL + "temp?from=" + fromValue + "&to=" + toValue)
           .then(response => {
-            this.tempSeries = response.data;
+            this.lastDate=response.data['lastDate'];
+            this.tempSeries = response.data['series'];
             Loading.hide();
           })
           .catch(error => {
@@ -264,6 +266,56 @@ export default Vue.extend({
             Loading.hide();
             alert(error)
           });
+    },
+    loadDelta(){
+      if(this.lastDate!==null)
+      axios.get(cfg.BASE_URL + "temp/delta?last=" + this.lastDate)
+          .then(response => {
+            this.lastDate=response.data['lastDate'];
+            let currSeries:Array<any>=response.data['series'];
+            for (var i=0; i<currSeries.length;i++){
+              var found:boolean=false;
+              for (var j=0; j<this.tempSeries.length;j++){
+                  if (this.tempSeries[j]['name']===currSeries[i]['name']){
+                    found=true;
+                    this.tempSeries[j]['data'].push(currSeries[i]['data']);
+                  }
+                  if (!found){
+                    this.tempSeries.push(currSeries[i]);
+                  }
+              }
+            }
+            this.tempSeries = response.data;
+          })
+          .catch(error => {
+            alert(error)
+          });
+      axios.get(cfg.BASE_URL + "solar/daylight")
+          .then(response => {
+            this.enoughLight = response.data;
+          })
+          .catch(error => {
+            alert(error)
+          })
+      axios.get(cfg.BASE_URL + "solar/strongWind")
+          .then(response => {
+            this.strongWind = response.data;
+          })
+          .catch(error => {
+            alert(error)
+          });
+      axios.get(cfg.BASE_URL + "solar/currentPosition")
+          .then(response => {
+            let data: Array<any>= this.posSeries[0]['data'];
+            if (data[0]['x']!==response.data['x'] || data[0]['y']!==response.data['y']){
+              data[0]['x']=response.data['x'];
+              data[0]['y']=response.data['y'];
+            }
+          })
+          .catch(error => {
+            alert(error)
+          });
+
     }
   },
   mounted(): void {
@@ -271,7 +323,7 @@ export default Vue.extend({
     date.setDate(this.fromDate.getDate() - 7);
     this.fromDate = date;
     this.loadCurrentState();
-    this.refreshIntervalId = setInterval(this.loadCurrentState, 5000);
+    this.refreshIntervalId = setInterval(this.loadDelta, 5000);
   },
   beforeDestroy() {
     clearInterval(this.refreshIntervalId);

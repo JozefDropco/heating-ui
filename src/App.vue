@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+
     <q-layout view="hhr Lpr lff">
       <q-layout-header>
         <q-toolbar color="primary">
