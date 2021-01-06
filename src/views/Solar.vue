@@ -1,5 +1,10 @@
 <template>
   <div class="marginLeft5rem marginTop5rem">
+    <q-breadcrumbs>
+      <q-breadcrumbs-el label="Domov" to="/" />
+      <q-breadcrumbs-el label="Solár" to="/Solar" />
+    </q-breadcrumbs>
+    <br/>
     <q-select :options="selectOptions" float-label="Upraviť pre" v-model="modifyFor"/>
     <q-select :options="monthsOptions" float-label="Mesiac" v-model="month" v-if="modifyFor==='month'"
               @input="loadCurrentState"/>

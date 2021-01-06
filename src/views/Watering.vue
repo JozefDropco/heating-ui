@@ -1,5 +1,11 @@
 <template>
     <div class="marginLeft5rem marginTop5rem">
+
+      <q-breadcrumbs>
+        <q-breadcrumbs-el label="Domov" to="/" />
+        <q-breadcrumbs-el label="Zavlažovanie" to="/Watering" />
+      </q-breadcrumbs>
+      <br/>
         <q-table
                 :pagination.sync="pagination"
                 dense="true"

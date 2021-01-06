@@ -1,18 +1,10 @@
 <template>
-    <q-list highlight>
-        <q-list-header>{{$t('menu')}}</q-list-header>
+    <q-list>
         <q-item to="/ServiceMode">{{$t('menu_serviceMenu')}}</q-item>
         <q-item to="/Watering">{{$t('menu_wateringMenu')}}</q-item>
         <q-item to="/Solar">{{$t('menu_solarMenu')}}</q-item>
         <q-item to="/Temperature">{{$t('menu_temperatureMenu')}}</q-item>
     </q-list>
-
-
-    <!--<q-page-sticky v-show="refCd" position="bottom-right" :offset="[18, 18]">-->
-    <!--<q-btn round color="secondary" @click="refCd = false" class="animate-pop">-->
-    <!--<q-icon name="keyboard_backspace"/>-->
-    <!--</q-btn>-->
-    <!--</q-page-sticky>-->
 </template>
 
 

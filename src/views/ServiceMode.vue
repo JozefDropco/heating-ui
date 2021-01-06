@@ -1,5 +1,10 @@
 <template>
   <div class="marginLeft5rem marginTop5rem">
+    <q-breadcrumbs>
+      <q-breadcrumbs-el label="Domov" to="/" />
+      <q-breadcrumbs-el label="Servisné menu" to="/ServiceMode" />
+    </q-breadcrumbs>
+    <br/>
     <q-toggle v-model="state" :label="$t('serviceModeState')"/>
     <div >
       <br/>

@@ -1,29 +1,15 @@
 <template>
   <div id="app">
-
     <q-layout view="hhr Lpr lff">
-      <q-layout-header>
-        <q-toolbar color="primary">
-
-          <q-btn
-              flat round dense
-              icon="menu"
-              @click="menuShown = !menuShown"
-          />
-
-          <q-toolbar-title>
-            <router-link to="/">
-              Inteligentný dom
-            </router-link>
-          </q-toolbar-title>
-
-        </q-toolbar>
-      </q-layout-header>
-      <q-layout-drawer :overlay=false :width="150" :value="menuShown" side="left">
-        <left-menu></left-menu>
-      </q-layout-drawer>
-
       <q-page-container>
+        <q-page-sticky position="top-right" :offset="[18, 18]">
+          <q-btn color="primary" icon="settings" round label="Nastavenia">
+            <!-- Direct child of target -->
+                    <q-popover>
+                      <left-menu></left-menu>
+                    </q-popover>
+          </q-btn>
+        </q-page-sticky>
         <router-view/>
       </q-page-container>
     </q-layout>
@@ -37,9 +23,7 @@ import LeftMenu from './views/Menu.vue'
 export default Vue.extend({
   name: 'app',
   data() {
-    return {
-      menuShown: true
-    }
+    return {}
   },
   components: {LeftMenu},
   methods: {}

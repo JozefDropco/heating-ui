@@ -1,40 +1,36 @@
 <template>
+  <div>
+    <div class="row">
+      <div class="col-6 q-pl-lg q-pb-lg">
+        <q-datetime float-label="Od dátumu" v-model="fromDate" type="date" @change="loadCurrentState"/>
+        <q-datetime float-label="Do dátumu" v-model="toDate" type="date" @change="loadCurrentState"/>
+        <br/>
+        <apexchart height="300px" width="500px" :options="tempOptions" :series="tempSeries"></apexchart>
+      </div>
 
-  <q-tabs inverted animated swipeable glossy align="justify">
-    <q-tab default name="temp" slot="title" label="Teploty"/>
-    <q-tab name="solar" slot="title" label="Kolektory"/>
-    <q-tab name="watering" slot="title" label="Zavlažovanie"/>
-    <q-tab name="heating" slot="title" label="Kúrenie"/>
-
-    <q-tab-pane name="temp">
-      <div style="margin-top: 20px">
+      <div class="col-6 q-pl-lg q-pb-lg">
         <div class="row">
           <div class="col-6 q-pl-lg q-pb-lg">
-            <q-datetime float-label="Od dátumu" v-model="fromDate" type="date" @change="loadCurrentState"/>
+            <apexchart height="300px" width="300px" :options="posOptions" :series="posSeries"></apexchart>
           </div>
           <div class="col-6 q-pl-lg q-pb-lg">
-            <q-datetime float-label="Do dátumu" v-model="toDate" type="date" @change="loadCurrentState"/>
+            <q-checkbox disable label="Jas" v-model="enoughLight"/>
+            <br/>
+            <q-checkbox disable label="Silný vietor" v-model="strongWind"/>
           </div>
         </div>
-        <apexchart :options="tempOptions" :series="tempSeries"></apexchart>
       </div>
-    </q-tab-pane>
-    <q-tab-pane name="solar">
-      <div class="row">
-        <div class="col-6 q-pl-lg q-pb-lg">
-          <apexchart height="450px" width="450px" :options="posOptions" :series="posSeries"></apexchart>
-        </div>
-        <div class="col-6 q-pl-lg q-pb-lg">
-          <q-checkbox  disable label="Jas" v-model="enoughLight"/><br/>
-          <q-checkbox disable label="Silný vietor" v-model="strongWind"/>
+    </div>
 
-        </div>
+    <div class="row">
+      <div class="col-6 q-pl-lg q-pb-lg">
+        Bolo raz jedno zavlazovanie :D
       </div>
-    </q-tab-pane>
-    <q-tab-pane name="watering">Bolo raz jedno zavlazovanie :D</q-tab-pane>
-    <q-tab-pane name="heating">Bolo raz jedno kurenie :D</q-tab-pane>
-  </q-tabs>
-
+      <div class="col-6 q-pl-lg q-pb-lg">
+        Bolo raz jedno kurenie :D
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -47,7 +43,7 @@ import axios from 'axios';
 export default Vue.extend({
   data() {
     return {
-      refreshIntervalId:null,
+      refreshIntervalId: null,
       tempSeries: [],
       tempOptions: {
         chart: {
@@ -87,9 +83,6 @@ export default Vue.extend({
           minHeight: 120,
           maxHeight: 120
         },
-        legend: {
-          position: 'top'
-        },
         tooltip: {
           x: {
             show: true,
@@ -99,7 +92,7 @@ export default Vue.extend({
       },
       enoughLight: false,
       strongWind: false,
-      lastDate:null,
+      lastDate: null,
       posSeries: [],
       posOptions: {
         chart: {
@@ -108,6 +101,9 @@ export default Vue.extend({
           height: 350,
           toolbar: {
             show: false
+          },
+          zoom: {
+            enabled: false,
           }
         },
         dataLabels: {
@@ -141,8 +137,8 @@ export default Vue.extend({
         xaxis: {
           type: 'number',
           show: false,
-          min: -280,
-          max: 0,
+          min: -300,
+          max: 20,
           axisBorder: {
             show: false
           },
@@ -154,28 +150,6 @@ export default Vue.extend({
           }
         },
         annotations: {
-          yaxis: [
-            {
-              y: -63,
-              strokeDashArray: 0,
-              borderColor: "#333",
-              fillColor: "#c2c2c2",
-              opacity: 0.8,
-              offsetX: 0,
-              offsetY: 0
-            }
-          ],
-          xaxis: [
-            {
-              x: -140,
-              strokeDashArray: 0,
-              borderColor: "#333",
-              fillColor: "#c2c2c2",
-              opacity: 0.8,
-              offsetX: 0,
-              offsetY: 0,
-            }
-          ],
           points: [
             {
               x: -280,
@@ -207,9 +181,9 @@ export default Vue.extend({
             return (
                 "<div>" +
                 " Východ/Západ:   " +
-                _ref.w.globals.seriesX[_ref.seriesIndex][_ref.dataPointIndex] +
+                _ref.w.globals.categoryLabels[_ref.dataPointIndex] +
                 "<br/>Sever/Juh: " +
-                _ref.w.globals.series[_ref.seriesIndex][_ref.dataPointIndex] +
+                _ref.series[_ref.seriesIndex][_ref.dataPointIndex] +
                 "</div>");
           }
         }
@@ -227,7 +201,7 @@ export default Vue.extend({
       var toValue = date.toISOString().slice(0, 10);
       axios.get(cfg.BASE_URL + "temp?from=" + fromValue + "&to=" + toValue)
           .then(response => {
-            this.lastDate=response.data['lastDate'];
+            this.lastDate = response.data['lastDate'];
             this.tempSeries = response.data['series'];
             Loading.hide();
           })
@@ -256,9 +230,9 @@ export default Vue.extend({
       axios.get(cfg.BASE_URL + "solar/currentPosition")
           .then(response => {
             this.posSeries.splice(0);
-            var series:any=new Object();
-            series['name']= "Aktuálna pozícia";
-            series['data']= [response.data];
+            var series: any = new Object();
+            series['name'] = "Aktuálna pozícia";
+            series['data'] = [response.data];
             this.posSeries.push(series);
             Loading.hide();
           })
@@ -267,29 +241,28 @@ export default Vue.extend({
             alert(error)
           });
     },
-    loadDelta(){
-      if(this.lastDate!==null)
-      axios.get(cfg.BASE_URL + "temp/delta?last=" + this.lastDate)
-          .then(response => {
-            this.lastDate=response.data['lastDate'];
-            let currSeries:Array<any>=response.data['series'];
-            for (var i=0; i<currSeries.length;i++){
-              var found:boolean=false;
-              for (var j=0; j<this.tempSeries.length;j++){
-                  if (this.tempSeries[j]['name']===currSeries[i]['name']){
-                    found=true;
+    loadDelta() {
+      if (this.lastDate !== null)
+        axios.get(cfg.BASE_URL + "temp/delta?last=" + this.lastDate)
+            .then(response => {
+              this.lastDate = response.data['lastDate'];
+              let currSeries: Array<any> = response.data['series'];
+              for (var i = 0; i < currSeries.length; i++) {
+                var found: boolean = false;
+                for (var j = 0; j < this.tempSeries.length; j++) {
+                  if (this.tempSeries[j]['name'] === currSeries[i]['name']) {
+                    found = true;
                     this.tempSeries[j]['data'].push(currSeries[i]['data']);
                   }
-                  if (!found){
+                  if (!found) {
                     this.tempSeries.push(currSeries[i]);
                   }
+                }
               }
-            }
-            this.tempSeries = response.data;
-          })
-          .catch(error => {
-            alert(error)
-          });
+            })
+            .catch(error => {
+              alert(error)
+            });
       axios.get(cfg.BASE_URL + "solar/daylight")
           .then(response => {
             this.enoughLight = response.data;
@@ -306,10 +279,10 @@ export default Vue.extend({
           });
       axios.get(cfg.BASE_URL + "solar/currentPosition")
           .then(response => {
-            let data: Array<any>= this.posSeries[0]['data'];
-            if (data[0]['x']!==response.data['x'] || data[0]['y']!==response.data['y']){
-              data[0]['x']=response.data['x'];
-              data[0]['y']=response.data['y'];
+            let data: Array<any> = this.posSeries[0]['data'];
+            if (data[0]['x'] !== response.data['x'] || data[0]['y'] !== response.data['y']) {
+              data[0]['x'] = response.data['x'];
+              data[0]['y'] = response.data['y'];
             }
           })
           .catch(error => {
