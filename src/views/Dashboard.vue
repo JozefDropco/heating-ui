@@ -1,35 +1,71 @@
 <template>
-  <div>
-    <div class="row">
-      <div class="col-6 q-pl-lg q-pb-lg">
-        <q-datetime float-label="Od dátumu" v-model="fromDate" type="date" @change="loadCurrentState"/>
-        <q-datetime float-label="Do dátumu" v-model="toDate" type="date" @change="loadCurrentState"/>
+  <div class="q-pa-md">
+    <div>
+    <q-card class="q-ma-md" inline>
+      <q-card-title>
+        Teploty
+      </q-card-title>
+      <q-card-separator/>
+      <q-card-main>
+        <q-datetime v-model="fromDate" float-label="Od dátumu" type="date" @change="loadCurrentState"/>
+        <q-datetime v-model="toDate" float-label="Do dátumu" type="date" @change="loadCurrentState"/>
         <br/>
-        <apexchart height="300px" width="500px" :options="tempOptions" :series="tempSeries"></apexchart>
-      </div>
-
-      <div class="col-6 q-pl-lg q-pb-lg">
+        <apexchart :options="tempOptions" :series="tempSeries" height="300px" width="500px"></apexchart>
+      </q-card-main>
+    </q-card>
+    <q-card class="q-ma-md" inline>
+      <q-card-title>
+        Kolektory
+      </q-card-title>
+      <q-card-separator/>
+      <q-card-main>
         <div class="row">
-          <div class="col-6 q-pl-lg q-pb-lg">
-            <apexchart height="300px" width="300px" :options="posOptions" :series="posSeries"></apexchart>
+          <div>
+            <apexchart :options="posOptions" :series="posSeries" height="300px" width="300px"></apexchart>
           </div>
-          <div class="col-6 q-pl-lg q-pb-lg">
-            <q-checkbox disable label="Jas" v-model="enoughLight"/>
+          <div class="w-100"/>
+          <div>
+            <q-checkbox v-model="enoughLight" disable label="Jas"/>
             <br/>
-            <q-checkbox disable label="Silný vietor" v-model="strongWind"/>
+            <q-checkbox v-model="strongWind" disable label="Silný vietor"/>
+            <br/>
+            <q-checkbox :value="false" disable label="Natáčanie"/>
+            <br/>
+            <div>Smer natáčania ak sa natáča S/J/V/Z</div>
           </div>
         </div>
-      </div>
+      </q-card-main>
+    </q-card>
+    <q-card class="q-ma-md" inline>
+      <q-card-title>
+        Zavlažovanie
+      </q-card-title>
+      <q-card-separator/>
+      <q-card-main>
+        Stav zavlažovania za dnesny den, dazdovy senzor, spatna vazba od zavlazoania
+      </q-card-main>
+    </q-card>
+
+    <q-card class="q-ma-md" inline>
+      <q-card-title>
+        Kúrenie
+      </q-card-title>
+      <q-card-separator/>
+      <q-card-main>
+        Stav kurenia (bezi kotol, krb, Stav cerpadiel a trojcestnych ventilov)
+      </q-card-main>
+    </q-card>
+      <q-card class="q-ma-md" inline>
+        <q-card-title>
+          Štatistiky
+        </q-card-title>
+        <q-card-separator/>
+        <q-card-main>
+          Bolo nebolo, ale ked raz bude tak zobrazime statistiky za dane obdobie (den, tento mesiac, minule mesiace, roky)
+        </q-card-main>
+      </q-card>
     </div>
 
-    <div class="row">
-      <div class="col-6 q-pl-lg q-pb-lg">
-        Bolo raz jedno zavlazovanie :D
-      </div>
-      <div class="col-6 q-pl-lg q-pb-lg">
-        Bolo raz jedno kurenie :D
-      </div>
-    </div>
   </div>
 </template>
 
