@@ -207,13 +207,13 @@ export default Vue.extend({
           });
     },
     editSolar(row: any) {
-      let url = cfg.BASE_URL + "solar";
+      let url = cfg.BASE_URL + "solar/cmd/update";
       if (this.modifyFor === 'day' && this.date !== null)
         url = url + '?date=' + this.date.slice(0, 10);
       else
         url = url + '?month=' + this.month;
       Loading.show();
-      axios.put(cfg.BASE_URL + "solar/cmd/update", row, {method: "PUT"})
+      axios.put(url, row, {method: "PUT"})
           .then(response => {
             this.loadCurrentState();
             Loading.hide();
@@ -224,13 +224,13 @@ export default Vue.extend({
           });
     },
     deleteSolar() {
-      let url = cfg.BASE_URL + "solar";
+      let url = cfg.BASE_URL + "solar/cmd/delete";
       if (this.modifyFor === 'day' && this.date !== null)
         url = url + '?date=' + this.date.slice(0, 10);
       else
         url = url + '?month=' + this.month;
       Loading.show();
-      axios.post(cfg.BASE_URL + "solar/cmd/delete", this.rowSelected, {method: "POST"})
+      axios.post(url, this.rowSelected, {method: "POST"})
           .then(response => {
             this.loadCurrentState();
             Loading.hide();

@@ -29,7 +29,7 @@
         </q-td>
         <q-td key="name" :props="props">
           {{ props.row.name }}
-          <q-popup-edit v-model="props.row.name" ref="editName" title="Upraviť" buttons label-set="Uložiť"
+          <q-popup-edit v-model="props.row.name" title="Upraviť" buttons label-set="Uložiť"
                         label-cancel="Zavrieť" @save="(v,iv)=>editMeasureplace(props.row)">
             <q-input float-label="Pomenovanie" v-model="props.row.name"/>
           </q-popup-edit>
@@ -37,8 +37,8 @@
         <q-td key="refCd" :props="props">{{ props.row.refCd }}</q-td>
         <q-td key="deviceId" :props="props">
           {{ props.row.deviceId }}
-          <q-popup-edit v-model="props.row" title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
-                        @save="(v,iv)=>editMeasureplace(props.row,)">
+          <q-popup-edit v-model="props.row.deviceId" persistent title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
+                        @save="(v,iv)=>editMeasureplace(props.row)">
             <q-select stack-label="ID zariadenia" :options="freeDeviceIds"   v-model="props.row.deviceId"/>
           </q-popup-edit>
         </q-td>
@@ -52,8 +52,8 @@
           </q-toolbar-title>
         </q-toolbar>
         <div class="layout-padding">
-          <q-input stack-label="Meno" :value="name"/>
-          <q-select stack-label="ID zariadenia" :options="freeDeviceIds" :value="deviceId"/>
+          <q-input stack-label="Meno" v-model="name"/>
+          <q-select stack-label="ID zariadenia" :options="freeDeviceIds" v-model="deviceId"/>
           <br/>
           <q-btn
               color="primary"
