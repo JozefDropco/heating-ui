@@ -39,7 +39,7 @@
           {{ props.row.deviceId }}
           <q-popup-edit v-model="props.row" title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
                         @save="(v,iv)=>editMeasureplace(props.row,)">
-            <q-select stack-label="ID zariadenia" :options="freeDeviceIds" v-model="props.row.deviceId"/>
+            <q-select stack-label="ID zariadenia" :options="freeDeviceIds"   v-model="props.row.deviceId"/>
           </q-popup-edit>
         </q-td>
       </q-tr>
@@ -53,7 +53,7 @@
         </q-toolbar>
         <div class="layout-padding">
           <q-input stack-label="Meno" :value="name"/>
-          <q-select stack-label="ID zariadenia" :options="freeDeviceIds" :value="name"/>
+          <q-select stack-label="ID zariadenia" :options="freeDeviceIds" :value="deviceId"/>
           <br/>
           <q-btn
               color="primary"
@@ -180,7 +180,11 @@ export default Vue.extend({
           });
       axios.get(cfg.BASE_URL + "temp/freeDeviceIds")
           .then(response => {
-            this.freeDeviceIds = response.data;
+            var tmp:Array<any>=new Array<any>();
+            for (var i=0; i< response.data.length;i++){
+              tmp.push({"value":response.data[i],"label":response.data[i]});
+            }
+            this.freeDeviceIds = tmp;
             Loading.hide();
           })
           .catch(error => {
