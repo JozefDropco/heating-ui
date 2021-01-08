@@ -1,67 +1,87 @@
 <template>
   <div class="q-pa-md">
     <div>
-    <q-card class="q-ma-md" inline>
-      <q-card-title>
-        Teploty
-      </q-card-title>
-      <q-card-separator/>
-      <q-card-main>
-        <q-datetime v-model="fromDate" float-label="Od dátumu" type="date" @change="loadCurrentState"/>
-        <q-datetime v-model="toDate" float-label="Do dátumu" type="date" @change="loadCurrentState"/>
-        <br/>
-        <apexchart :options="tempOptions" :series="tempSeries" height="300px" width="500px"></apexchart>
-      </q-card-main>
-    </q-card>
-    <q-card class="q-ma-md" inline>
-      <q-card-title>
-        Kolektory
-      </q-card-title>
-      <q-card-separator/>
-      <q-card-main>
-        <div class="row">
-          <div>
-            <apexchart :options="posOptions" :series="posSeries" height="300px" width="300px"></apexchart>
-          </div>
-          <div class="w-100"/>
-          <div>
-            <q-checkbox v-model="enoughLight" disable label="Jas"/>
-            <br/>
-            <q-checkbox v-model="strongWind" disable label="Silný vietor"/>
-            <br/>
-            <q-checkbox :value="false" disable label="Natáčanie"/>
-            <br/>
-            <div>Smer natáčania ak sa natáča S/J/V/Z</div>
-          </div>
-        </div>
-      </q-card-main>
-    </q-card>
-    <q-card class="q-ma-md" inline>
-      <q-card-title>
-        Zavlažovanie
-      </q-card-title>
-      <q-card-separator/>
-      <q-card-main>
-        Stav zavlažovania za dnesny den, dazdovy senzor, spatna vazba od zavlazoania
-      </q-card-main>
-    </q-card>
+      <q-card class="q-ma-md" inline>
+        <q-card-title>
+          Teploty
+        </q-card-title>
+        <q-card-separator/>
+        <q-card-main>
+          <q-datetime v-model="fromDate" float-label="Od dátumu" type="date" @change="loadCurrentState"/>
+          <q-datetime v-model="toDate" float-label="Do dátumu" type="date" @change="loadCurrentState"/>
+          <br/>
+          <apexchart :options="tempOptions" :series="tempSeries" height="300px" width="500px"></apexchart>
+        </q-card-main>
+      </q-card>
+      <q-card class="q-ma-md" inline>
+        <q-card-title>
+          Kolektory
+        </q-card-title>
+        <q-card-separator/>
+        <q-card-main>
+          <div class="row">
+            <div>
+              <apexchart :options="posOptions" :series="posSeries" height="300px" width="300px"></apexchart>
+            </div>
+            <div class="w-100"/>
+            <div>
+              <q-checkbox v-model="enoughLight" disable label="Jas"/>
+              <br/>
+              <q-checkbox v-model="strongWind" disable label="Silný vietor"/>
+              <br/>
+              <q-checkbox v-model="overHeated" disable label="Prehriate"/>
+              <br/>
+              <br/>
+              {{ collectorPosition }}
 
-    <q-card class="q-ma-md" inline>
-      <q-card-title>
-        Kúrenie
-      </q-card-title>
-      <q-card-separator/>
-      <q-card-main>
-        Stav kurenia (bezi kotol, krb, Stav cerpadiel a trojcestnych ventilov)
-      </q-card-main>
-    </q-card>
+            </div>
+          </div>
+          <b>Nadchádzajúce natáčania pre dnešný deň</b>
+          <table style="width: 100%; text-align: center">
+            <tr>
+              <th>Čas</th>
+              <th>Vertikálne</th>
+              <th>Horintálne</th>
+            </tr>
+            <tr v-for="item in remainingPositions" :key="item.hour">
+              <td>{{ item.hour }}:{{ item.minute }}</td>
+              <td>{{ item.vert }}</td>
+              <td>{{ item.hor }}</td>
+            </tr>
+          </table>
+        </q-card-main>
+      </q-card>
+      <q-card class="q-ma-md" inline>
+        <q-card-title>
+          Zavlažovanie
+        </q-card-title>
+        <q-card-separator/>
+        <q-card-main>
+          <q-checkbox v-model="warmEnough" disable label="Dostatočná teplota"/>
+          <br/>
+          <q-checkbox v-model="isRainy" disable label="Dážď"/>
+          <br/>
+          <q-checkbox v-model="pumpRunning" disable label="Pumpa beží"/>
+        </q-card-main>
+      </q-card>
+
+      <q-card class="q-ma-md" inline>
+        <q-card-title>
+          Kúrenie
+        </q-card-title>
+        <q-card-separator/>
+        <q-card-main>
+          Stav kurenia (bezi kotol, krb, Stav cerpadiel a trojcestnych ventilov)
+        </q-card-main>
+      </q-card>
       <q-card class="q-ma-md" inline>
         <q-card-title>
           Štatistiky
         </q-card-title>
         <q-card-separator/>
         <q-card-main>
-          Bolo nebolo, ale ked raz bude tak zobrazime statistiky za dane obdobie (den, tento mesiac, minule mesiace, roky)
+          Bolo nebolo, ale ked raz bude tak zobrazime statistiky za dane obdobie (den, tento mesiac, minule mesiace,
+          roky)
         </q-card-main>
       </q-card>
     </div>
@@ -79,8 +99,13 @@ import axios from 'axios';
 export default Vue.extend({
   data() {
     return {
+      warmEnough:false,
+      isRainy:false,
+      pumpRunning:false,
       refreshIntervalId: null,
       tempSeries: [],
+      remainingPositions: [],
+      collectorPosition: "Natáčanie zastavené",
       tempOptions: {
         chart: {
           type: 'line',
@@ -128,6 +153,7 @@ export default Vue.extend({
       },
       enoughLight: false,
       strongWind: false,
+      overHeated: false,
       lastDate: null,
       posSeries: [],
       posOptions: {
@@ -149,7 +175,7 @@ export default Vue.extend({
           size: 15,
         },
         title: {
-          text: 'Pozícia kolektorov',
+          text: 'Pozícia',
           align: 'left'
         },
         grid: {
@@ -245,35 +271,31 @@ export default Vue.extend({
             Loading.hide();
             alert(error)
           });
-      axios.get(cfg.BASE_URL + "solar/daylight")
+
+      axios.get(cfg.BASE_URL + "solar/currentState")
           .then(response => {
-            this.enoughLight = response.data;
-            Loading.hide();
-          })
-          .catch(error => {
-            Loading.hide();
-            alert(error)
-          })
-      axios.get(cfg.BASE_URL + "solar/strongWind")
-          .then(response => {
-            this.strongWind = response.data;
+            this.strongWind = response.data['windy'];
+            this.enoughLight = response.data['dayLight'];
+            this.overHeated = response.data['overHeated'];
+            this.remainingPositions = response.data['remainingPositions'];
+            this.posSeries.splice(0);
+            var series: any = new Object();
+            series['name'] = "Aktuálna pozícia";
+            series['data'] = [response.data['pos']];
+            this.posSeries.push(series);
             Loading.hide();
           })
           .catch(error => {
             Loading.hide();
             alert(error)
           });
-      axios.get(cfg.BASE_URL + "solar/currentPosition")
+      axios.get(cfg.BASE_URL + "watering/state")
           .then(response => {
-            this.posSeries.splice(0);
-            var series: any = new Object();
-            series['name'] = "Aktuálna pozícia";
-            series['data'] = [response.data];
-            this.posSeries.push(series);
-            Loading.hide();
+            this.warmEnough = response.data['warmEnough'];
+            this.isRainy = response.data['isRainy'];
+            this.pumpRunning = response.data['pumpRunning'];
           })
           .catch(error => {
-            Loading.hide();
             alert(error)
           });
     },
@@ -299,32 +321,51 @@ export default Vue.extend({
             .catch(error => {
               alert(error)
             });
-      axios.get(cfg.BASE_URL + "solar/daylight")
+
+      axios.get(cfg.BASE_URL + "solar/currentState")
           .then(response => {
-            this.enoughLight = response.data;
-          })
-          .catch(error => {
-            alert(error)
-          })
-      axios.get(cfg.BASE_URL + "solar/strongWind")
-          .then(response => {
-            this.strongWind = response.data;
-          })
-          .catch(error => {
-            alert(error)
-          });
-      axios.get(cfg.BASE_URL + "solar/currentPosition")
-          .then(response => {
+            this.strongWind = response.data['windy'];
+            this.overHeated = response.data['overHeated'];
+            this.enoughLight = response.data['dayLight'];
+            this.remainingPositions = response.data['remainingPositions'];
             let data: Array<any> = this.posSeries[0]['data'];
-            if (data[0]['x'] !== response.data['x'] || data[0]['y'] !== response.data['y']) {
-              data[0]['x'] = response.data['x'];
-              data[0]['y'] = response.data['y'];
+            if (data[0]['x'] !== response.data['pos']['x'] || data[0]['y'] !== response.data['pos']['y']) {
+              data[0]['x'] = response.data['pos']['x'];
+              data[0]['y'] = response.data['pos']['y'];
+            }
+            var movement: Array<String> = response.data['movement'];
+            if (movement !== undefined && movement.length !== 0) {
+              var text = "Natáčam na ";
+              for (var i = 0; i < movement.length; i++) {
+                if (i > 0) text = text + ", ";
+                if (movement[i] === 'NORTH') {
+                  text = text + " Sever";
+                }
+                if (movement[i] === 'SOUTH') {
+                  text = text + " Juh";
+                }
+                if (movement[i] === 'EAST') {
+                  text = text + " Východ";
+                }
+                if (movement[i] === 'WEST') {
+                  text = text + " Západ";
+                }
+              }
+              this.collectorPosition = text;
             }
           })
           .catch(error => {
             alert(error)
           });
-
+      axios.get(cfg.BASE_URL + "watering/state")
+          .then(response => {
+            this.warmEnough = response.data['warmEnough'];
+            this.isRainy = response.data['isRainy'];
+            this.pumpRunning = response.data['pumpRunning'];
+          })
+          .catch(error => {
+            alert(error)
+          });
     }
   },
   mounted(): void {
