@@ -167,14 +167,15 @@ export default Vue.extend({
         yaxis: {
           type: 'number',
           show: false,
-          min: -135,
-          max: 0
+          min: 0,
+          max: 135,
+          reversed: true,
         },
         xaxis: {
           type: 'number',
           show: false,
-          min: -300,
-          max: 20,
+          min: -20,
+          max: 300,
           axisBorder: {
             show: false
           },
@@ -188,24 +189,23 @@ export default Vue.extend({
         annotations: {
           points: [
             {
-              x: -280,
-              y: -62.5,
-              marker: {size: 0},
-              label: {text: "Západ", textAnchor: 'start'}
-            }, {
               x: 0,
-
-              y: -62.5,
+              y: 62.5,
               marker: {size: 0},
-              label: {text: "Východ", textAnchor: 'end'}
+              label: {text: "Západ"}
             }, {
-              x: -140,
-              y: -0,
+              x: 280,
+              y: 62.5,
+              marker: {size: 0},
+              label: {text: "Východ"}
+            }, {
+              x: 140,
+              y: 0,
               marker: {size: 0},
               label: {text: "Sever"}
             }, {
-              x: -140,
-              y: -135,
+              x: 140,
+              y: 135,
               marker: {size: 0},
               label: {text: "Juh"}
             }
