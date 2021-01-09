@@ -77,7 +77,7 @@
 <script lang="ts">
 import {Vue} from 'vue-property-decorator';
 import {Loading} from 'quasar';
-import cfg from "../heating-config";
+import cfg from "../../heating-config";
 import axios from 'axios';
 
 
@@ -141,7 +141,7 @@ export default Vue.extend({
       },
       fromDate: new Date(),
       toDate: new Date(),
-      columns: [
+      tempColumns: [
         {
           name: 'name',
           label: 'Pomenovanie meracieho miesta',

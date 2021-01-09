@@ -27,9 +27,9 @@
 <script lang="ts">
     import {Vue} from 'vue-property-decorator';
     import {Loading} from 'quasar';
-    import cfg from "../heating-config";
+    import cfg from "../../heating-config";
     import axios from 'axios';
-    import i18n from "../I18n";
+    import i18n from "../../I18n";
 
     require('url-search-params-polyfill');
 
@@ -48,7 +48,7 @@
             }
         },
         computed: {
-            columns: function () {
+            tempColumns: function () {
                 if (i18n.locale === 'sk') {
                     return [{
                         name: 'Id',

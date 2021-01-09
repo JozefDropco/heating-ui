@@ -16,7 +16,7 @@
 <script lang="ts">
     import {Vue} from 'vue-property-decorator';
     import {date, Loading} from 'quasar';
-    import cfg from "../heating-config";
+    import cfg from "../../heating-config";
     import axios from 'axios';
 
     require('url-search-params-polyfill');

@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import ServiceMode from './views/ServiceMode.vue'
-import Watering from './views/Watering.vue'
+import ServiceMode from './views/settings/ServiceMode.vue'
+import Watering from './views/settings/Watering.vue'
 import Dashboard from "./views/Dashboard.vue";
-import WateringEdit from "@/views/WateringEdit.vue";
-import Temperature from "@/views/Temperature.vue";
-import Solar from "@/views/Solar.vue";
+import WateringEdit from "@/views/settings/WateringEdit.vue";
+import Temperature from "@/views/settings/Temperature.vue";
+import Solar from "@/views/settings/Solar.vue";
 
 Vue.use(Router)
 

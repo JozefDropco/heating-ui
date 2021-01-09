@@ -8,7 +8,7 @@
     <q-select :options="selectOptions" float-label="Upraviť pre" v-model="modifyFor"/>
     <q-select :options="monthsOptions" float-label="Mesiac" v-model="month" v-if="modifyFor==='month'"
               @input="loadCurrentState"/>
-    <q-datetime float-label="Dátum" v-model="date" type="date" v-if="modifyFor==='day'" @change="loadCurrentState"/>
+    <q-datetime float-label="Dátum" v-model="date" type="date" v-if="modifyFor==='day'" @change="loadCurrentState" :first-day-of-week="1"/>
     <br/>
     <q-table v-if="modifyFor==='day' || (modifyFor==='month' && month !==null)"
              selection="single"
@@ -66,7 +66,7 @@
 <script lang="ts">
 import {Vue} from 'vue-property-decorator';
 import {Loading} from 'quasar';
-import cfg from "../heating-config";
+import cfg from "../../heating-config";
 import axios from 'axios';
 
 require('url-search-params-polyfill');
@@ -150,7 +150,7 @@ export default Vue.extend({
         rowsPerPage: 10 // current rows per page being displayed
       },
       rowSelected: [],
-      columns: [{
+      tempColumns: [{
         name: 'hour',
         required: true,
         label: 'Hodina',

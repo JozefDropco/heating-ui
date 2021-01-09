@@ -11,6 +11,7 @@
     "apexcharts": "3.23.0",
     "axios": "0.19.2",
     "file-saver": "2.0.2",
+    "moment": "2.29.1",
     "quasar-extras": "^2.0.4",
     "quasar-framework": "^0.17.0",
     "url-search-params-polyfill": "^5.0.0",

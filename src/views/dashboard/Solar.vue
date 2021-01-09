@@ -1,129 +1,54 @@
 <template>
-  <div class="q-pa-md">
-    <div>
-      <q-card class="q-ma-md" inline>
-        <q-card-title>
-          Teploty
-        </q-card-title>
-        <q-card-separator/>
-        <q-card-main>
-         <temperature/>
-        </q-card-main>
-      </q-card>
-      <q-card class="q-ma-md" inline>
-        <q-card-title>
-          Kolektory
-        </q-card-title>
-        <q-card-separator/>
-        <q-card-main>
-         <solar/>
-        </q-card-main>
-      </q-card>
-      <q-card class="q-ma-md" inline>
-        <q-card-title>
-          Zavlažovanie
-        </q-card-title>
-        <q-card-separator/>
-        <q-card-main>
-          <watering/>
-        </q-card-main>
-      </q-card>
+  <div>
+    <div class="row">
+      <div>
+        <apexchart :options="posOptions" :series="posSeries" height="300px" width="300px"></apexchart>
+      </div>
+      <div class="w-100"/>
+      <div>
+        <q-checkbox v-model="enoughLight" disable label="Jas"/>
+        <br/>
+        <q-checkbox v-model="strongWind" disable label="Silný vietor"/>
+        <br/>
+        <q-checkbox v-model="overHeated" disable label="Prehriate"/>
+        <br/>
+        <br/>
+        {{ collectorPosition }}
 
-      <q-card class="q-ma-md" inline>
-        <q-card-title>
-          Kúrenie
-        </q-card-title>
-        <q-card-separator/>
-        <q-card-main>
-          Stav kurenia (bezi kotol, krb, Stav cerpadiel a trojcestnych ventilov)
-        </q-card-main>
-      </q-card>
-      <q-card class="q-ma-md" inline>
-        <q-card-title>
-          Štatistiky
-        </q-card-title>
-        <q-card-separator/>
-        <q-card-main>
-          <stats/>
-        </q-card-main>
-      </q-card>
+      </div>
     </div>
-
+    <b>Nadchádzajúce natáčania pre dnešný deň</b>
+    <table style="width: 100%; text-align: center">
+      <tr>
+        <th>Čas</th>
+        <th>Vertikálne</th>
+        <th>Horintálne</th>
+      </tr>
+      <tr v-for="item in remainingPositions" :key="item.hour">
+        <td>{{ item.hour }}:{{ item.minute }}</td>
+        <td>{{ item.vert }}</td>
+        <td>{{ item.hor }}</td>
+      </tr>
+    </table>
   </div>
 </template>
 
 <script lang="ts">
 import {Vue} from 'vue-property-decorator';
 import {Loading} from 'quasar';
-import cfg from "../heating-config";
+import cfg from "../../heating-config";
 import axios from 'axios';
-import Temperature from './dashboard/Temperature.vue'
-import Solar from './dashboard/Solar.vue'
-import Watering from './dashboard/Watering.vue'
-import Stats from './dashboard/Stats.vue'
-
 
 
 export default Vue.extend({
-  components: {Temperature,Solar,Watering,Stats},
   data() {
     return {
-      warmEnough:false,
-      isRainy:false,
-      pumpRunning:false,
       refreshIntervalId: null,
-      tempSeries: [],
       remainingPositions: [],
       collectorPosition: "Natáčanie zastavené",
-      tempOptions: {
-        chart: {
-          type: 'line',
-          stacked: false,
-          height: 350,
-          zoom: {
-            type: 'x',
-            enabled: true,
-            autoScaleYaxis: true
-          },
-          toolbar: {
-            autoSelected: 'zoom'
-          }
-        },
-        dataLabels: {
-          enabled: false
-        },
-        markers: {
-          size: 0,
-        },
-        title: {
-          text: 'Teplota',
-          align: 'left'
-        },
-        yaxis: {
-          type: 'number',
-          title: {
-            text: 'Teplota'
-          },
-        },
-        xaxis: {
-          type: 'datetime',
-          labels: {
-            format: 'dd. MM. yyyy'
-          },
-          minHeight: 120,
-          maxHeight: 120
-        },
-        tooltip: {
-          x: {
-            show: true,
-            format: 'dd. MM. yyyy HH:mm'
-          },
-        }
-      },
       enoughLight: false,
       strongWind: false,
       overHeated: false,
-      lastDate: null,
       posSeries: [],
       posOptions: {
         chart: {
@@ -219,27 +144,10 @@ export default Vue.extend({
           }
         }
       },
-      fromDate: new Date(),
-      toDate: new Date(),
     }
   },
   methods: {
     loadCurrentState() {
-      Loading.show();
-      var fromValue = this.fromDate.toISOString().slice(0, 10);
-      let date = new Date(this.toDate);
-      date.setDate(date.getDate() + 1);
-      var toValue = date.toISOString().slice(0, 10);
-      axios.get(cfg.BASE_URL + "temp?from=" + fromValue + "&to=" + toValue)
-          .then(response => {
-            this.lastDate = response.data['lastDate'];
-            this.tempSeries = response.data['series'];
-            Loading.hide();
-          })
-          .catch(error => {
-            Loading.hide();
-            alert(error)
-          });
 
       axios.get(cfg.BASE_URL + "solar/currentState")
           .then(response => {
@@ -258,39 +166,8 @@ export default Vue.extend({
             Loading.hide();
             alert(error)
           });
-      axios.get(cfg.BASE_URL + "watering/state")
-          .then(response => {
-            this.warmEnough = response.data['warmEnough'];
-            this.isRainy = response.data['isRainy'];
-            this.pumpRunning = response.data['pumpRunning'];
-          })
-          .catch(error => {
-            alert(error)
-          });
     },
     loadDelta() {
-      if (this.lastDate !== null)
-        axios.get(cfg.BASE_URL + "temp/delta?last=" + this.lastDate)
-            .then(response => {
-              this.lastDate = response.data['lastDate'];
-              let currSeries: Array<any> = response.data['series'];
-              for (var i = 0; i < currSeries.length; i++) {
-                var found: boolean = false;
-                for (var j = 0; j < this.tempSeries.length; j++) {
-                  if (this.tempSeries[j]['name'] === currSeries[i]['name']) {
-                    found = true;
-                    this.tempSeries[j]['data'].push(currSeries[i]['data']);
-                  }
-                  if (!found) {
-                    this.tempSeries.push(currSeries[i]);
-                  }
-                }
-              }
-            })
-            .catch(error => {
-              alert(error)
-            });
-
       axios.get(cfg.BASE_URL + "solar/currentState")
           .then(response => {
             this.strongWind = response.data['windy'];
@@ -326,21 +203,9 @@ export default Vue.extend({
           .catch(error => {
             alert(error)
           });
-      axios.get(cfg.BASE_URL + "watering/state")
-          .then(response => {
-            this.warmEnough = response.data['warmEnough'];
-            this.isRainy = response.data['isRainy'];
-            this.pumpRunning = response.data['pumpRunning'];
-          })
-          .catch(error => {
-            alert(error)
-          });
     }
   },
   mounted(): void {
-    let date = new Date();
-    date.setDate(this.fromDate.getDate() - 7);
-    this.fromDate = date;
     this.loadCurrentState();
     this.refreshIntervalId = setInterval(this.loadDelta, 5000);
   },
