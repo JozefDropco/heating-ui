@@ -14,9 +14,8 @@
     <q-datetime v-if="manual" v-model="toDate" float-label="Do dátumu" type="date" @change="loadCurrentState"
                 :first-day-of-week="1"/>
     <br/>
-    <q-table title="Teploty" :columns="tempColumns" no-data-label="Teploty neboli namerané" :data="tempData">
-
-    </q-table>
+    <q-table title="Teploty" :columns="tempColumns" no-data-label="Teploty neboli namerané" :data="tempData"/>
+    <q-table title="Vstup/Výstup" :columns="portColumns" no-data-label="Žiadne štatistiky" :data="portsData"/>
   </div>
 </template>
 
@@ -107,7 +106,8 @@ export default Vue.extend({
       ],
       option: "day",
       tempData: [],
-      years:[],
+      portsData: [],
+      years: [],
       tempColumns: [
         {
           name: 'measurePlace',
@@ -135,7 +135,35 @@ export default Vue.extend({
           sortable: true,
         },
       ],
-      weeks:[]
+      portColumns: [
+        {
+          name: 'name',
+          label: 'Meno',
+          align: 'left',
+          field: 'name',
+          sortable: true,
+        }, {
+          name: 'secondsSum',
+          label: 'Čas',
+          align: 'right',
+          field: 'secondsSum',
+          sortable: true,
+          format: (secs:any) => {
+            var minutes = Math.floor(secs / 60);
+            secs = secs % 60;
+            var hours = Math.floor(minutes / 60)
+            minutes = minutes % 60;
+            return `${("0" + hours).slice(-2)}:${("0" + minutes).slice(-2)}:${("0" + secs).slice(-2)}`;
+          }
+        }, {
+          name: 'count',
+          label: 'Počet',
+          align: 'right',
+          field: 'count',
+          sortable: true,
+        }
+      ],
+      weeks: []
     }
   },
   methods: {
@@ -191,7 +219,8 @@ export default Vue.extend({
       var toValue = this.toDate.toISOString().slice(0, 10);
       axios.get(cfg.BASE_URL + "stats/temp?toDate=" + toValue + "&fromDate=" + fromValue)
           .then(response => {
-            this.tempData = response.data;
+            this.tempData = response.data['temps'];
+            this.portsData = response.data['ports'];
             Loading.hide();
           })
           .catch(error => {
@@ -202,16 +231,16 @@ export default Vue.extend({
   },
   mounted(): void {
     let year = new Date().getFullYear();
-    for (var i=0; i<5;i++){
+    for (var i = 0; i < 5; i++) {
       this.years.push({
-        "label":(year-i).toString(),
-        "value":(year-i).toString()
+        "label": (year - i).toString(),
+        "value": (year - i).toString()
       });
     }
-    for (var i=1; i<=53;i++){
+    for (i = 1; i <= 53; i++) {
       this.weeks.push({
-        "label":i.toString(),
-        "value":i.toString()
+        "label": i.toString(),
+        "value": i.toString()
       });
     }
     this.loadCurrentState();
