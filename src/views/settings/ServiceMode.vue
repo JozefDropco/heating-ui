@@ -18,6 +18,7 @@
           <div v-for="(input,idx) in inputPins" :key="idx">
             <q-toggle class="paddingBottom" v-model="input.value" disable="true"
                       :label="input.name"/>
+            <a href="{{input.url}}">link</a>
           </div>
         </q-card-main>
       </q-card>
@@ -31,6 +32,7 @@
             <q-toggle class="paddingBottom" v-model="output.value" :disable="!state"
                       @input="toggleOutputState(output)"
                       :label="output.name"/>
+            <a href="{{input.url}}">link</a>
           </div>
         </q-card-main>
       </q-card>
