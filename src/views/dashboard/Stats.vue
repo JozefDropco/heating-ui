@@ -15,6 +15,7 @@
                 :first-day-of-week="1"/>
     <br/>
     <q-table title="Teploty" :columns="tempColumns" no-data-label="Teploty neboli namerané" :data="tempData"/>
+    <br/>
     <q-table title="Vstup/Výstup" :columns="portColumns" no-data-label="Žiadne štatistiky" :data="portsData"/>
   </div>
 </template>
@@ -217,7 +218,7 @@ export default Vue.extend({
     loadCurrentState() {
       var fromValue = this.fromDate.toISOString().slice(0, 10);
       var toValue = this.toDate.toISOString().slice(0, 10);
-      axios.get(cfg.BASE_URL + "stats/temp?toDate=" + toValue + "&fromDate=" + fromValue)
+      axios.get(cfg.BASE_URL + "stats?fromDate=" + fromValue+"&toDate=" + toValue)
           .then(response => {
             this.tempData = response.data['temps'];
             this.portsData = response.data['ports'];

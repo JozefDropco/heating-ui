@@ -47,6 +47,16 @@
           <stats/>
         </q-card-main>
       </q-card>
+
+      <q-card class="q-ma-md" inline>
+        <q-card-title>
+          Hlásenia
+        </q-card-title>
+        <q-card-separator/>
+        <q-card-main>
+          <logs/>
+        </q-card-main>
+      </q-card>
     </div>
 
   </div>
@@ -61,11 +71,12 @@ import Temperature from './dashboard/Temperature.vue'
 import Solar from './dashboard/Solar.vue'
 import Watering from './dashboard/Watering.vue'
 import Stats from './dashboard/Stats.vue'
+import Logs from './dashboard/Logs.vue'
 
 
 
 export default Vue.extend({
-  components: {Temperature,Solar,Watering,Stats},
+  components: {Temperature,Solar,Watering,Stats,Logs},
   data() {
     return {
       warmEnough:false,
