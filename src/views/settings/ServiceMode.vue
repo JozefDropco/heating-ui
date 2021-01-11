@@ -1,12 +1,12 @@
 <template>
   <div class="marginLeft5rem marginTop5rem">
     <q-breadcrumbs>
-      <q-breadcrumbs-el label="Domov" to="/" />
-      <q-breadcrumbs-el label="Servisné menu" to="/ServiceMode" />
+      <q-breadcrumbs-el label="Domov" to="/"/>
+      <q-breadcrumbs-el label="Servisné menu" to="/ServiceMode"/>
     </q-breadcrumbs>
     <br/>
     <q-toggle v-model="state" :label="$t('serviceModeState')"/>
-    <div >
+    <div>
       <br/>
       <br/>
       <q-card inline class="marginLeft5rem">
@@ -16,9 +16,10 @@
         <q-card-separator/>
         <q-card-main>
           <div v-for="(input,idx) in inputPins" :key="idx">
-            <q-toggle class="paddingBottom" v-model="input.value" disable="true"
-                      :label="input.name"/>
-            <a href="{{input.url}}">link</a>
+            <q-toggle class="paddingBottom" v-model="input.value" disable="true">
+              <a :href="input.url" target="_blank" v-if="input.url!=='#'">{{ input.name }}</a>
+              <span v-if="input.url==='#'">{{input.name}}</span>
+            </q-toggle>
           </div>
         </q-card-main>
       </q-card>
@@ -30,9 +31,10 @@
         <q-card-main>
           <div v-for="(output,idx) in outputPins" :key="idx">
             <q-toggle class="paddingBottom" v-model="output.value" :disable="!state"
-                      @input="toggleOutputState(output)"
-                      :label="output.name"/>
-            <a href="{{input.url}}">link</a>
+                      @input="toggleOutputState(output)">
+              <a :href="output.url" target="_blank" v-if="output.url!=='#'">{{ output.name }}</a>
+              <span v-if="output.url==='#'">{{output.name}}</span>
+            </q-toggle>
           </div>
         </q-card-main>
       </q-card>
@@ -51,7 +53,7 @@ export default Vue.extend({
   data() {
     return {
       state: false,
-      refreshIntervalId:null,
+      refreshIntervalId: null,
       outputPins: [],
       inputPins: []
     }
@@ -69,9 +71,10 @@ export default Vue.extend({
           .then(response => {
             for (let i = 0; i < response.data.length; i++) {
               var found: boolean = false;
-              for (let j = 0; j<this.outputPins.length; j++) {
+              for (let j = 0; j < this.outputPins.length; j++) {
                 if (this.outputPins[j]['refcd'] === response.data[i].refcd) {
                   this.outputPins[j]['value'] = (response.data[i].value === 'true');
+                  this.outputPins[j]['url'] = response.data[i].url;
                   found = true;
                 }
               }
@@ -79,7 +82,8 @@ export default Vue.extend({
                 this.outputPins.push({
                   'refcd': response.data[i].refcd,
                   'name': response.data[i].name,
-                  'value': response.data[i].value === 'true'
+                  'value': response.data[i].value === 'true',
+                  'url': response.data[i].url
                 });
               }
             }
@@ -91,9 +95,10 @@ export default Vue.extend({
           .then(response => {
             for (let i = 0; i < response.data.length; i++) {
               var found: boolean = false;
-              for (let j = 0; j<this.inputPins.length; j++) {
+              for (let j = 0; j < this.inputPins.length; j++) {
                 if (this.inputPins[j]['refcd'] === response.data[i].refcd) {
                   this.inputPins[j]['value'] = (response.data[i].value === 'true');
+                  this.inputPins[j]['url'] = response.data[i].url;
                   found = true;
                 }
               }
@@ -101,7 +106,8 @@ export default Vue.extend({
                 this.inputPins.push({
                   'refcd': response.data[i].refcd,
                   'name': response.data[i].name,
-                  'value': response.data[i].value === 'true'
+                  'value': response.data[i].value === 'true',
+                  'url': response.data[i].url
                 });
               }
             }
