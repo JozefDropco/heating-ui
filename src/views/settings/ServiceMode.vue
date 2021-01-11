@@ -16,7 +16,7 @@
         <q-card-separator/>
         <q-card-main>
           <div v-for="(input,idx) in inputPins" :key="idx">
-            <q-toggle class="paddingBottom" v-model="input.value" disable="true">
+            <q-toggle class="paddingBottom" v-model="input.value" :disable="true">
               <a :href="input.url" target="_blank" v-if="input.url!=='#'">{{ input.name }}</a>
               <span v-if="input.url==='#'">{{input.name}}</span>
             </q-toggle>
