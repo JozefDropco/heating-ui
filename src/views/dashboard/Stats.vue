@@ -164,14 +164,15 @@ export default Vue.extend({
           sortable: true,
         }
       ],
-      weeks: []
+      weeks: [],
+      refreshIntervalId: null,
     }
   },
   methods: {
     changeDay() {
       this.fromDate = this.date;
       this.toDate = this.date;
-      this.loadCurrentState();
+      this.loadCurrentState(true);
     },
     changeYear() {
       if (this.option === 'week') {
@@ -183,18 +184,18 @@ export default Vue.extend({
       if (this.option === 'year') {
         this.fromDate = moment().set('year', parseInt(this.year)).startOf('year').toDate();
         this.toDate = moment().set('year', parseInt(this.year)).endOf('year').toDate();
-        this.loadCurrentState();
+        this.loadCurrentState(true);
       }
     },
     changeWeek() {
       this.fromDate = moment().set('year', parseInt(this.year)).set('isoWeek', parseInt(this.week)).startOf('isoWeek').toDate();
       this.toDate = moment().set('year', parseInt(this.year)).set('isoWeek', parseInt(this.week)).endOf('isoWeek').toDate();
-      this.loadCurrentState();
+      this.loadCurrentState(true);
     },
     changeMonth() {
       this.fromDate = moment().set('year', parseInt(this.year)).set('month', parseInt(this.month)).startOf('month').toDate();
       this.toDate = moment().set('year', parseInt(this.year)).set('month', parseInt(this.month)).endOf('month').toDate();
-      this.loadCurrentState();
+      this.loadCurrentState(true);
     },
     switchOption() {
       if (this.option === 'day') {
@@ -213,11 +214,13 @@ export default Vue.extend({
         this.fromDate = moment().startOf('year').toDate();
         this.toDate = moment().endOf('year').toDate();
       }
-      this.loadCurrentState();
+      this.loadCurrentState(true);
     },
-    loadCurrentState() {
+    loadCurrentState(initial: boolean) {
       var fromValue = this.fromDate.toISOString().slice(0, 10);
       var toValue = this.toDate.toISOString().slice(0, 10);
+
+      if (initial || toValue === new Date().toISOString().slice(0, 10))
       axios.get(cfg.BASE_URL + "stats?fromDate=" + fromValue+"&toDate=" + toValue)
           .then(response => {
             this.tempData = response.data['temps'];
@@ -244,7 +247,11 @@ export default Vue.extend({
         "value": i.toString()
       });
     }
-    this.loadCurrentState();
+    this.loadCurrentState(true);
+    this.refreshIntervalId = setInterval(this.loadCurrentState, 5000,false);
+  },
+  beforeDestroy() {
+    clearInterval(this.refreshIntervalId);
   }
 });
 </script>
