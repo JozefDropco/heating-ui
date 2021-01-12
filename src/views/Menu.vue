@@ -4,6 +4,7 @@
         <q-item to="/Watering">{{$t('menu_wateringMenu')}}</q-item>
         <q-item to="/Solar">{{$t('menu_solarMenu')}}</q-item>
         <q-item to="/Temperature">{{$t('menu_temperatureMenu')}}</q-item>
+        <q-item to="/Constants">Konštanty</q-item>
     </q-list>
 </template>
 

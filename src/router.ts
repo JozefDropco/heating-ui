@@ -6,6 +6,7 @@ import Dashboard from "./views/Dashboard.vue";
 import WateringEdit from "@/views/settings/WateringEdit.vue";
 import Temperature from "@/views/settings/Temperature.vue";
 import Solar from "@/views/settings/Solar.vue";
+import Constants from "@/views/settings/Constants.vue";
 
 Vue.use(Router)
 
@@ -30,6 +31,10 @@ export default new Router({
             path: '/Temperature',
             name: 'temperature',
             component: Temperature
+        }, {
+            path: '/Constants',
+            name: 'constants',
+            component: Constants
         },
         {
             path: '/Watering/:wId',
