@@ -8,12 +8,12 @@
       <br/>
         <q-table
                 :pagination.sync="pagination"
-                dense="true"
+                :dense="true"
                 selection="single"
                 :selected.sync="rowSelected"
                 :title="$t('menu_wateringMenu')"
                 :data="tableData"
-                :columns="columns"
+                :columns="wateringColumns"
                 row-key="id"
         >
             <template slot="top-right" slot-scope="props">
@@ -48,7 +48,7 @@
             }
         },
         computed: {
-            tempColumns: function () {
+            wateringColumns: function () {
                 if (i18n.locale === 'sk') {
                     return [{
                         name: 'Id',

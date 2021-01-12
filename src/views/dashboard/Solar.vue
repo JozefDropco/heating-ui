@@ -158,7 +158,7 @@ export default Vue.extend({
             this.posSeries.splice(0);
             var series: any = new Object();
             series['name'] = "Aktuálna pozícia";
-            series['data'] = [response.data['pos']];
+            series['data'] = [[response.data['pos']['x'],response.data['pos']['y']]];
             this.posSeries.push(series);
             Loading.hide();
           })
@@ -175,9 +175,9 @@ export default Vue.extend({
             this.enoughLight = response.data['dayLight'];
             this.remainingPositions = response.data['remainingPositions'];
             let data: Array<any> = this.posSeries[0]['data'];
-            if (data[0]['x'] !== response.data['pos']['x'] || data[0]['y'] !== response.data['pos']['y']) {
-              data[0]['x'] = response.data['pos']['x'];
-              data[0]['y'] = response.data['pos']['y'];
+            if (data[0][0] !== response.data['pos']['x'] || data[0][1] !== response.data['pos']['y']) {
+              data[0][0] = response.data['pos']['x'];
+              data[0][1] = response.data['pos']['y'];
             }
             var movement: Array<String> = response.data['movement'];
             if (movement !== undefined && movement.length !== 0) {

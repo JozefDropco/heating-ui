@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-datetime v-if="option==='day'" v-model="date" float-label="Dátum" type="date" @change="loadCurrentState"
+    <q-datetime v-model="date" float-label="Dátum" type="date" @change="loadCurrentState"
                 :first-day-of-week="1"/>
     <q-select v-model="logLevel" stack-label="Stupeň podrobnosti" @input="loadCurrentState" :options="logLevels"/>
     <q-select v-model="numberOfLines" stack-label="Počet správ" @input="loadCurrentState"

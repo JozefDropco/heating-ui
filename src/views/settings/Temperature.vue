@@ -9,7 +9,7 @@
              :selected.sync="selected"
              selection="single"
              row-key="refCd"
-             :data="data" :columns="columns">
+             :data="data" :columns="tempColumns">
       <template slot="top-right" slot-scope="props">
         <q-btn
             icon="delete"
@@ -141,7 +141,7 @@ export default Vue.extend({
       },
       fromDate: new Date(),
       toDate: new Date(),
-      tempColumns: [
+      wateringColumns: [
         {
           name: 'name',
           label: 'Pomenovanie meracieho miesta',
