@@ -150,7 +150,7 @@ export default Vue.extend({
         rowsPerPage: 10 // current rows per page being displayed
       },
       rowSelected: [],
-      wateringColumns: [{
+      columns: [{
         name: 'hour',
         required: true,
         label: 'Hodina',

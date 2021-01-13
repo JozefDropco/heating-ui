@@ -141,7 +141,7 @@ export default Vue.extend({
       },
       fromDate: new Date(),
       toDate: new Date(),
-      wateringColumns: [
+      tempColumns: [
         {
           name: 'name',
           label: 'Pomenovanie meracieho miesta',

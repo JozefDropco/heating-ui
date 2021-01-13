@@ -1,6 +1,10 @@
 <template>
   <div class="q-pa-md">
-
+    <q-breadcrumbs>
+      <q-breadcrumbs-el label="Domov" to="/"/>
+      <q-breadcrumbs-el label="Konštanty" to="/Konštanty"/>
+    </q-breadcrumbs>
+    <br/>
     <q-table :pagination.sync="pagination"  title="Celé konštanty" :columns="columns" no-data-label="Žiadne konštanty" :data="longData">
       <q-tr slot="body" slot-scope="props" :props="props">
         <q-td key="refCd" :props="props">{{ props.row.refCd }}</q-td>
