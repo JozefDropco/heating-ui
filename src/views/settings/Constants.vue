@@ -5,39 +5,26 @@
       <q-breadcrumbs-el label="Konštanty" to="/Konštanty"/>
     </q-breadcrumbs>
     <br/>
-    <q-table :pagination.sync="pagination"  title="Celé konštanty" :columns="columns" no-data-label="Žiadne konštanty" :data="longData">
+    <q-table :pagination.sync="pagination"  title="Konštanty" :columns="columns" no-data-label="Žiadne konštanty" :data="constData">
       <q-tr slot="body" slot-scope="props" :props="props">
-        <q-td key="refCd" :props="props">{{ props.row.refCd }}</q-td>
-        <q-td key="value" :props="props">
-          {{ props.row.value }}
-          <q-popup-edit v-model="props.row.value" persistent title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
-                        @save="(v,iv)=>modify(props.row,'long')">
-            <q-input stack-label="Hodnota" v-model="props.row.value"/>
+        <q-td key="group" :props="props">{{ props.row.group }}
+          <q-popup-edit v-model="props.row.group" persistent title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
+                        @save="(v,iv)=>modify(props.row)">
+            <q-input stack-label="Popis" v-model="props.row.group"/>
           </q-popup-edit>
         </q-td>
-      </q-tr>
-    </q-table>
-    <br/>
-    <q-table :pagination.sync="pagination"  title="Desatinné konštanty" :columns="columns" no-data-label="Žiadne konštanty" :data="doubleData">
-      <q-tr slot="body" slot-scope="props" :props="props">
-        <q-td key="refCd" :props="props">{{ props.row.refCd }}</q-td>
-        <q-td key="value" :props="props">
-          {{ props.row.value }}
-          <q-popup-edit v-model="props.row.value" persistent title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
-                        @save="(v,iv)=>modify(props.row,'double')">
-            <q-input stack-label="Hodnota" v-model="props.row.value"/>
+        <q-td key="refCd" :props="props">{{ props.row.refCd }} </q-td>
+        <q-td key="description" :props="props">{{ props.row.description }}
+          <q-popup-edit v-model="props.row.description" persistent title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
+                        @save="(v,iv)=>modify(props.row)">
+            <q-input stack-label="Popis" v-model="props.row.description"/>
           </q-popup-edit>
         </q-td>
-      </q-tr>
-    </q-table>
-    <br/>
-    <q-table :pagination.sync="pagination" title="Textové konštanty" :columns="columns" no-data-label="Žiadne konštanty" :data="stringData">
-      <q-tr slot="body" slot-scope="props" :props="props">
-        <q-td key="refCd" :props="props">{{ props.row.refCd }}</q-td>
+        <q-td key="valueType" :props="props">{{ props.row.valueType }} </q-td>
         <q-td key="value" :props="props">
           {{ props.row.value }}
           <q-popup-edit v-model="props.row.value" persistent title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
-                        @save="(v,iv)=>modify(props.row,'string')">
+                        @save="(v,iv)=>modify(props.row)">
             <q-input stack-label="Hodnota" v-model="props.row.value"/>
           </q-popup-edit>
         </q-td>
@@ -56,21 +43,38 @@ import moment from 'moment';
 export default Vue.extend({
   data() {
     return {
-      stringData:[],
-      longData:[],
-      doubleData:[],
+      constData:[],
       pagination: {
-        sortBy: null, // String, column "name" property value
+        sortBy: "group", // String, column "name" property value
         descending: false,
         page: 1,
         rowsPerPage: 50 // current rows per page being displayed
       },
       columns: [
         {
+          name: 'group',
+          label: 'Skupina',
+          align: 'left',
+          field: 'group',
+          sortable: true,
+        },
+        {
           name: 'refCd',
           label: 'Kľúč',
           align: 'left',
           field: 'refCd',
+          sortable: true,
+        },{
+          name: 'description',
+          label: 'Popis',
+          align: 'left',
+          field: 'description',
+          sortable: true,
+        },{
+          name: 'valueType',
+          label: 'Typ hodnoty',
+          align: 'left',
+          field: 'valueType',
           sortable: true,
         }, {
           name: 'value',
@@ -87,9 +91,7 @@ export default Vue.extend({
     loadCurrentState() {
       axios.get(cfg.BASE_URL + "const")
           .then(response => {
-            this.longData= response.data['longConsts'];
-            this.doubleData= response.data['doubleConsts'];
-            this.stringData= response.data['stringConsts'];
+            this.constData= response.data;
             Loading.hide();
           })
           .catch(error => {
@@ -97,8 +99,8 @@ export default Vue.extend({
             alert(error)
           });
     },
-    modify(row:any,type:string){
-      axios.put(cfg.BASE_URL + "const?type=" + type, row, {method: "PUT"})
+    modify(row:any){
+      axios.put(cfg.BASE_URL + "const?type=" + row['constantType'], row, {method: "PUT"})
           .then(response => {
             this.loadCurrentState();
           })
