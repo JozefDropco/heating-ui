@@ -35,7 +35,7 @@
         </q-card-title>
         <q-card-separator/>
         <q-card-main>
-          Stav kurenia (bezi kotol, krb, Stav cerpadiel a trojcestnych ventilov)
+          <heating/>
         </q-card-main>
       </q-card>
       <q-card class="q-ma-md" inline>
@@ -72,11 +72,12 @@ import Solar from './dashboard/Solar.vue'
 import Watering from './dashboard/Watering.vue'
 import Stats from './dashboard/Stats.vue'
 import Logs from './dashboard/Logs.vue'
+import Heating from './dashboard/Heating.vue'
 
 
 
 export default Vue.extend({
-  components: {Temperature,Solar,Watering,Stats,Logs},
+  components: {Temperature,Solar,Watering,Stats,Logs,Heating},
   data() {
     return {
       warmEnough:false,
