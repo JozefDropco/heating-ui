@@ -2,7 +2,7 @@
   <div>
     <q-checkbox v-model="solarCircularPump" disable label="Kolektory - obehové čerpadlo"/>
     <br/>
-    <q-checkbox v-model="heatingBoiler" disable label="Ohrev TA3"/>
+    <q-checkbox v-model="heatingBoilerBlock" disable label="Blokovanie ohrevu TA3"/>
     <br/>
     <q-checkbox v-model="threeWayBypass" disable label="3-cestný ventil - bypass"/>
     <br/>
@@ -23,7 +23,7 @@ export default Vue.extend({
     return {
       refreshIntervalId: null,
       solarCircularPump: false,
-      heatingBoiler: false,
+      heatingBoilerBlock: false,
       threeWayBypass: false,
       threeWayOpened: false
     }
@@ -34,7 +34,7 @@ export default Vue.extend({
       axios.get(cfg.BASE_URL + "heating")
           .then(response => {
             this.solarCircularPump = response.data['solarCircularPump'];
-            this.heatingBoiler = response.data['heatingBoiler'];
+            this.heatingBoilerBlock = response.data['heatingBoilerBlock'];
             this.threeWayBypass = response.data['threeWayBypass'];
             this.threeWayOpened = response.data['threeWayOpened'];
             Loading.hide();

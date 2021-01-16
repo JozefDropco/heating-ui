@@ -158,7 +158,7 @@ export default Vue.extend({
             this.posSeries.splice(0);
             var series: any = new Object();
             series['name'] = "Aktuálna pozícia";
-            series['data'] = [[response.data['pos']['x'],response.data['pos']['y']]];
+            series['data'] = [[response.data['pos']['x'], response.data['pos']['y']]];
             this.posSeries.push(series);
             Loading.hide();
           })
@@ -181,7 +181,11 @@ export default Vue.extend({
             }
             var movement: Array<String> = response.data['movement'];
             if (movement !== undefined && movement.length !== 0) {
-              var text = "Natáčam na ";
+              var text;
+              if (movement.length > 0)
+                text = "Natáčam na ";
+              else
+                text = "Natáčanie zastavené";
               for (var i = 0; i < movement.length; i++) {
                 if (i > 0) text = text + ", ";
                 if (movement[i] === 'NORTH') {
