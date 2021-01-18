@@ -3,6 +3,7 @@
         <q-item to="/ServiceMode">{{$t('menu_serviceMenu')}}</q-item>
         <q-item to="/Watering">{{$t('menu_wateringMenu')}}</q-item>
         <q-item to="/Solar">{{$t('menu_solarMenu')}}</q-item>
+        <q-item to="/Heating">Kúrenie</q-item>
         <q-item to="/Temperature">{{$t('menu_temperatureMenu')}}</q-item>
         <q-item to="/Constants">Konštanty</q-item>
     </q-list>
