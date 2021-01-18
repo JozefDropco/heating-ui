@@ -25,25 +25,25 @@
                 label="Vymazať"
                 @click="deleteHeating"
             />
-            <q-btn icon="add" label="Pridať" @click="addHeating=true" disable/>
+            <q-btn icon="add" label="Pridať" @click="addHeating=true"/>
           </template>
           <q-tr slot="body" slot-scope="props" :props="props">
             <q-td auto-width>
               <q-checkbox dense v-model="props.selected"/>
             </q-td>
             <q-td key="fromTime" :props="props">
-              {{ props.row.fromTime }}
-              <!--          <q-popup-edit v-model="props.row.fromTime" title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"-->
-              <!--                        @save="(v,iv)=>editHeating(props.row)">-->
-              <!--            <q-datetime-picker type="time" v-model="props.row.fromTime" format24h/>-->
-              <!--          </q-popup-edit>-->
+              {{ formatTime(props.row.fromTime)}}
+                        <q-popup-edit v-model="props.row.fromTime" title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
+                                      @save="(v,iv)=>editHeating(props.row)">
+                          <q-datetime-picker type="time" v-model="props.row.fromTime"  format24h/>
+                        </q-popup-edit>
             </q-td>
             <q-td key="toTime" :props="props">
-              {{ props.row.toTime }}
-              <!--          <q-popup-edit v-model="props.row.toTime" title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"-->
-              <!--                        @save="(v,iv)=>editHeating(props.row)">-->
-              <!--            <q-datetime-picker type="time" v-model="props.row.toTime" format24h/>-->
-              <!--          </q-popup-edit>-->
+              {{ formatTime(props.row.toTime) }}
+                        <q-popup-edit v-model="props.row.toTime" title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
+                                      @save="(v,iv)=>editHeating(props.row)">
+                          <q-datetime-picker type="time" v-model="props.row.toTime" format24h/>
+                        </q-popup-edit>
             </q-td>
             <q-td key="threeWayValveStartDiff" :props="props">
               {{ props.row.threeWayValveStartDiff }}
@@ -73,6 +73,36 @@
         </q-table>
       </q-card-main>
     </q-card>
+
+    <q-modal v-model="addHeating">
+      <q-modal-layout>
+        <q-toolbar slot="header">
+          <q-toolbar-title>
+            Pridať
+          </q-toolbar-title>
+        </q-toolbar>
+        <div class="layout-padding">
+          <q-datetime type="time" format24h input stack-label="Od" v-model="fromTime"/>
+          <q-datetime type="time" format24h input stack-label="Do" v-model="toTime"/>
+          <q-input type="number" float-label="Zapnúť ohrev pri"  v-model="diffStart"/>
+          <q-input type="number" float-label="Zapnúť Bypass pri"  v-model="diffStop"/>
+          <q-checkbox  label="Blokovať ohrev kotlom"  v-model="boilerBlocked"/>
+          <br/>
+          <q-btn
+              color="primary"
+              v-close-overlay
+              label="Uložiť"
+              @click="saveSolarHeating()"
+          />
+          <q-btn
+              color="primary"
+              v-close-overlay
+              label="Zavrieť"
+          />
+
+        </div>
+      </q-modal-layout>
+    </q-modal>
   </div>
 </template>
 
@@ -88,6 +118,12 @@ require('url-search-params-polyfill');
 export default Vue.extend({
   data() {
     return {
+      addHeating:false,
+      fromTime:null,
+      toTime:null,
+      diffStart:10,
+      diffStop:0,
+      boilerBlocked:false,
       modifyFor: moment().isoWeekday().toString(),
       serverPagination: {
         page: 1,
@@ -164,6 +200,9 @@ export default Vue.extend({
     }
   },
   methods: {
+    formatTime(time:string){
+      return moment(time).format('HH:mm:ss');
+    },
     loadCurrentState() {
       Loading.show();
       let url = cfg.BASE_URL + "heating/query/forDay/" + this.modifyFor;
@@ -188,6 +227,27 @@ export default Vue.extend({
             alert(error)
           });
     },
+    saveSolarHeating(){
+      Loading.show();
+      var newItem  ={
+        'fromTime':this.fromTime,
+        'day':this.modifyFor,
+        'toTime':this.toTime,
+        'boilerBlock':this.boilerBlocked,
+        threeWayValveStartDiff:this.diffStart,
+        threeWayValveStopDiff:this.diffStop
+      };
+      axios.post(cfg.BASE_URL + "heating/cmd/create",newItem, {method: "POST"})
+          .then(response => {
+            this.loadCurrentState();
+            Loading.hide();
+          })
+          .catch(error => {
+            Loading.hide();
+            alert(error)
+          });
+    },
+
     deleteHeating() {
       Loading.show();
       axios.delete(cfg.BASE_URL + "heating/cmd/delete/" + this.rowSelected[0]['id'], {method: "DELETE"})
