@@ -2,15 +2,15 @@
   <div class="q-pa-md">
     <q-breadcrumbs>
       <q-breadcrumbs-el label="Domov" to="/"/>
-      <q-breadcrumbs-el label="Konštanty" to="/Konštanty"/>
+      <q-breadcrumbs-el label="Konštanty" to="/Constants"/>
     </q-breadcrumbs>
     <br/>
-    <q-table :pagination.sync="pagination"  title="Konštanty" :columns="columns" no-data-label="Žiadne konštanty" :data="constData">
+    <q-table dense :pagination.sync="pagination"  title="Konštanty" :columns="columns" no-data-label="Žiadne konštanty" :data="constData">
       <q-tr slot="body" slot-scope="props" :props="props">
         <q-td key="group" :props="props">{{ props.row.group }}
           <q-popup-edit v-model="props.row.group" persistent title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
                         @save="(v,iv)=>modify(props.row)">
-            <q-input stack-label="Popis" v-model="props.row.group"/>
+            <q-input stack-label="Skupina" v-model="props.row.group"/>
           </q-popup-edit>
         </q-td>
         <q-td key="refCd" :props="props">{{ props.row.refCd }} </q-td>
@@ -20,11 +20,11 @@
             <q-input stack-label="Popis" v-model="props.row.description"/>
           </q-popup-edit>
         </q-td>
-        <q-td key="valueType" :props="props">{{ props.row.valueType }} </q-td>
         <q-td key="value" :props="props">
           {{ props.row.value }}
           <q-popup-edit v-model="props.row.value" persistent title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
                         @save="(v,iv)=>modify(props.row)">
+            <q-input float-label="Typ hodnoty" v-model="props.row.valueType"/>
             <q-input stack-label="Hodnota" v-model="props.row.value"/>
           </q-popup-edit>
         </q-td>
@@ -70,12 +70,6 @@ export default Vue.extend({
           align: 'left',
           field: 'description',
           sortable: true,
-        },{
-          name: 'valueType',
-          label: 'Typ hodnoty',
-          align: 'left',
-          field: 'valueType',
-          sortable: true,
         }, {
           name: 'value',
           label: 'Hodnota',
@@ -111,10 +105,6 @@ export default Vue.extend({
   },
   mounted(): void {
     this.loadCurrentState();
-    this.refreshIntervalId = setInterval(this.loadCurrentState, 5000);
-  },
-  beforeDestroy() {
-    clearInterval(this.refreshIntervalId);
   }
 });
 </script>
