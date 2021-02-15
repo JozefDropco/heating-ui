@@ -8,6 +8,12 @@
     <br/>
     <q-checkbox v-model="threeWayOpened" disable label="3-cestný ventil - otvorený"/>
     <br/>
+    <q-checkbox v-model="heaterFlame" disable label="Horák plynového kotla"/>
+    <br/>
+    <q-checkbox v-model="heaterBoiler" disable label="Ohrev TA3 plynovým kotlom"/>
+    <br/>
+    <q-checkbox v-model="heaterCircularPump" disable label="Kúrenie chod čerpadla"/>
+    <br/>
   </div>
 </template>
 
@@ -25,7 +31,10 @@ export default Vue.extend({
       solarCircularPump: false,
       heatingBoilerBlock: false,
       threeWayBypass: false,
-      threeWayOpened: false
+      threeWayOpened: false,
+      heaterFlame:false,
+      heaterBoiler:false,
+      heaterCircularPump:false
     }
   },
   methods: {
@@ -37,6 +46,9 @@ export default Vue.extend({
             this.heatingBoilerBlock = response.data['heatingBoilerBlock'];
             this.threeWayBypass = response.data['threeWayBypass'];
             this.threeWayOpened = response.data['threeWayOpened'];
+            this.heaterFlame = response.data['heaterFlame'];
+            this.heaterBoiler = response.data['heaterBoiler'];
+            this.heaterCircularPump = response.data['heaterCircularPump'];
             Loading.hide();
           })
           .catch(error => {

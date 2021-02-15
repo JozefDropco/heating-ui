@@ -59,6 +59,8 @@ export default Vue.extend({
           maxHeight: 120
         },
         tooltip: {
+          enabled:true,
+          shared:true,
           x: {
             show: true,
             format: 'dd. MM. yyyy HH:mm'
