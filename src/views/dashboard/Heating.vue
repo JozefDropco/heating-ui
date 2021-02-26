@@ -14,6 +14,8 @@
     <br/>
     <q-checkbox v-model="heaterCircularPump" disable label="Kúrenie chod čerpadla"/>
     <br/>
+    <q-checkbox v-model="fireplaceCircularPump" disable label="Krb chod čerpadla"/>
+    <br/>
   </div>
 </template>
 
@@ -34,6 +36,7 @@ export default Vue.extend({
       threeWayOpened: false,
       heaterFlame:false,
       heaterBoiler:false,
+      fireplaceCircularPump:false,
       heaterCircularPump:false
     }
   },
@@ -47,6 +50,7 @@ export default Vue.extend({
             this.threeWayBypass = response.data['threeWayBypass'];
             this.threeWayOpened = response.data['threeWayOpened'];
             this.heaterFlame = response.data['heaterFlame'];
+            this.fireplaceCircularPump = response.data['fireplaceCircularPump'];
             this.heaterBoiler = response.data['heaterBoiler'];
             this.heaterCircularPump = response.data['heaterCircularPump'];
             Loading.hide();

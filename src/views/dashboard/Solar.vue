@@ -2,7 +2,7 @@
   <div>
     <div class="row">
       <div>
-        <apexchart :options="posOptions" :series="posSeries" height="300px" width="300px"></apexchart>
+        <apexchart ref="chart" :options="posOptions" :series="posSeries" height="300px" width="300px"></apexchart>
       </div>
       <div class="w-100"/>
       <div>
@@ -11,10 +11,6 @@
         <q-checkbox v-model="strongWind" disable label="Silný vietor"/>
         <br/>
         <q-checkbox v-model="overHeated" disable label="Prehriate"/>
-        <br/>
-        <br/>
-        {{ collectorPosition }}
-
       </div>
     </div>
     <b>Nadchádzajúce natáčania pre dnešný deň</b>
@@ -44,8 +40,9 @@ export default Vue.extend({
   data() {
     return {
       refreshIntervalId: null,
+      currentBlinkDirection: [],
+      blinkingDirections: [],
       remainingPositions: [],
-      collectorPosition: "Natáčanie zastavené",
       enoughLight: false,
       strongWind: false,
       overHeated: false,
@@ -129,7 +126,6 @@ export default Vue.extend({
               marker: {size: 0},
               label: {text: "Juh"}
             }
-
           ]
         },
         tooltip: {
@@ -180,41 +176,71 @@ export default Vue.extend({
               data[0][1] = response.data['pos']['y'];
             }
             var movement: Array<String> = response.data['movement'];
-            if (movement !== undefined && movement.length !== 0) {
-              var text;
-              if (movement.length > 0)
-                text = "Natáčam na ";
-              else
-                text = "Natáčanie zastavené";
-              for (var i = 0; i < movement.length; i++) {
-                if (i > 0) text = text + ", ";
-                if (movement[i] === 'NORTH') {
-                  text = text + " Sever";
-                }
-                if (movement[i] === 'SOUTH') {
-                  text = text + " Juh";
-                }
-                if (movement[i] === 'EAST') {
-                  text = text + " Východ";
-                }
-                if (movement[i] === 'WEST') {
-                  text = text + " Západ";
-                }
-              }
-              this.collectorPosition = text;
-            }
+            this.blinkingDirections = movement;
+            this.blinkIfNeeded()
           })
           .catch(error => {
             alert(error)
           });
+    },
+    blinkIfNeeded() {
+      let chart: any = this.$refs.chart;
+      if (this.currentBlinkDirection.toString() !== this.blinkingDirections.toString()) {
+        let west = {
+          x: 0,
+          y: 62.5,
+          marker: {size: 0},
+          label: {text: "Západ", style:{cssClass:''}}
+        };
+        if (this.blinkingDirections.indexOf('WEST') !==-1) west.label.style.cssClass = 'blink';
+        let east = {
+          x: 280,
+          y: 62.5,
+          marker: {size: 0},
+          label: {text: "Východ", style:{cssClass:''}}
+        };
+        if (this.blinkingDirections.indexOf('EAST')!==-1) east.label.style.cssClass = 'blink';
+        let north = {
+          x: 140,
+          y: 0,
+          marker: {size: 0},
+          label: {text: "Sever", style:{cssClass:''}}
+        };
+        if (this.blinkingDirections.indexOf('NORTH')!==-1) north.label.style.cssClass = 'blink';
+        let south = {
+          x: 140,
+          y: 135,
+          marker: {size: 0},
+          label: {text: "Juh", style:{cssClass:''}}
+        };
+        if (this.blinkingDirections.indexOf('SOUTH')!==-1) south.label.style.cssClass = 'blink';
+        chart.clearAnnotations()
+        chart.addPointAnnotation(west,true)
+        chart.addPointAnnotation(east,true)
+        chart.addPointAnnotation(north,true)
+        chart.addPointAnnotation(south,true)
+        this.currentBlinkDirection = this.blinkingDirections
+      }
     }
   },
   mounted(): void {
     this.loadCurrentState();
     this.refreshIntervalId = setInterval(this.loadDelta, 5000);
+
   },
   beforeDestroy() {
     clearInterval(this.refreshIntervalId);
   }
 });
 </script>
+<style>
+.blink {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+</style>
