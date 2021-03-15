@@ -20,8 +20,8 @@
         <th>Vertikálne</th>
         <th>Horintálne</th>
       </tr>
-      <tr v-for="item in remainingPositions" :key="item.hour">
-        <td>{{ item.hour }}:{{ item.minute }}</td>
+      <tr v-for="item in remainingPositions" :key="item.hour+':'+item.minute">
+        <td>{{ item.hour }}:{{ item.minute.toString().padStart(2, '0') }}</td>
         <td>{{ item.vert }}</td>
         <td>{{ item.hor }}</td>
       </tr>
@@ -85,14 +85,14 @@ export default Vue.extend({
           type: 'number',
           show: false,
           min: 0,
-          max: 135,
+          max: 430,
           reversed: true,
         },
         xaxis: {
           type: 'number',
           show: false,
           min: -20,
-          max: 300,
+          max: 710,
           axisBorder: {
             show: false
           },
@@ -106,23 +106,23 @@ export default Vue.extend({
         annotations: {
           points: [
             {
-              x: 0,
-              y: 62.5,
+              x: 10,
+              y: 215,
               marker: {size: 0},
               label: {text: "Západ"}
             }, {
-              x: 280,
-              y: 62.5,
+              x: 650,
+              y: 215,
               marker: {size: 0},
               label: {text: "Východ"}
             }, {
-              x: 140,
+              x: 345,
               y: 0,
               marker: {size: 0},
               label: {text: "Sever"}
             }, {
-              x: 140,
-              y: 135,
+              x: 345,
+              y: 430,
               marker: {size: 0},
               label: {text: "Juh"}
             }
@@ -174,6 +174,8 @@ export default Vue.extend({
             if (data[0][0] !== response.data['pos']['x'] || data[0][1] !== response.data['pos']['y']) {
               data[0][0] = response.data['pos']['x'];
               data[0][1] = response.data['pos']['y'];
+              let chart: any = this.$refs.chart;
+              chart.refresh()
             }
             var movement: Array<String> = response.data['movement'];
             this.blinkingDirections = movement;
@@ -187,29 +189,29 @@ export default Vue.extend({
       let chart: any = this.$refs.chart;
       if (this.currentBlinkDirection.toString() !== this.blinkingDirections.toString()) {
         let west = {
-          x: 0,
-          y: 62.5,
+          x: 10,
+          y: 215,
           marker: {size: 0},
           label: {text: "Západ", style:{cssClass:''}}
         };
         if (this.blinkingDirections.indexOf('WEST') !==-1) west.label.style.cssClass = 'blink';
         let east = {
-          x: 280,
-          y: 62.5,
+          x: 650,
+          y: 215,
           marker: {size: 0},
           label: {text: "Východ", style:{cssClass:''}}
         };
         if (this.blinkingDirections.indexOf('EAST')!==-1) east.label.style.cssClass = 'blink';
         let north = {
-          x: 140,
+          x: 345,
           y: 0,
           marker: {size: 0},
           label: {text: "Sever", style:{cssClass:''}}
         };
         if (this.blinkingDirections.indexOf('NORTH')!==-1) north.label.style.cssClass = 'blink';
         let south = {
-          x: 140,
-          y: 135,
+          x: 345,
+          y: 430,
           marker: {size: 0},
           label: {text: "Juh", style:{cssClass:''}}
         };
