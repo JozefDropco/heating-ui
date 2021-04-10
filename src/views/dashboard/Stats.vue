@@ -117,6 +117,12 @@ export default Vue.extend({
           field: 'measurePlace',
           sortable: true,
         }, {
+          name: 'last',
+          label: 'Posledná',
+          align: 'right',
+          field: 'last',
+          sortable: true,
+        }, {
           name: 'min',
           label: 'Minimum',
           align: 'right',
