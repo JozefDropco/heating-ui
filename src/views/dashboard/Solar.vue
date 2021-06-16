@@ -17,11 +17,13 @@
     <table style="width: 100%; text-align: center">
       <tr>
         <th>Čas</th>
+        <th>Typ posunu</th>
         <th>Vertikálne</th>
         <th>Horintálne</th>
       </tr>
       <tr v-for="item in remainingPositions" :key="item.hour+':'+item.minute">
         <td>{{ item.hour }}:{{ item.minute.toString().padStart(2, '0') }}</td>
+        <td>{{ item.moveType }}</td>
         <td>{{ item.vert }}</td>
         <td>{{ item.hor }}</td>
       </tr>

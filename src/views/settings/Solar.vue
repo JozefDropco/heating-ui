@@ -5,27 +5,56 @@
       <q-breadcrumbs-el label="Solár" to="/Solar" />
     </q-breadcrumbs>
     <br/>
-    <q-select :options="selectOptions" float-label="Upraviť pre" v-model="modifyFor"/>
-    <q-select :options="monthsOptions" float-label="Mesiac" v-model="month" v-if="modifyFor==='month'"
-              @input="loadCurrentState"/>
-    <q-datetime float-label="Dátum" v-model="date" type="date" v-if="modifyFor==='day'" @change="loadCurrentState" :first-day-of-week="1"/>
+    <q-select :options="monthsOptions" float-label="Mesiac" v-model="month" @input="loadCurrentState"/>
     <br/>
-    <q-table v-if="modifyFor==='day' || (modifyFor==='month' && month !==null)"
+    <q-card class="q-ma-md" inline>
+      <q-card-title>
+        Ranná pozícia
+      </q-card-title>
+      <q-card-separator/>
+      <q-card-main>
+        <q-datetime type="time" v-model="sunRiseTime" stack-label="Čas"  format24h/>
+        <q-input stack-label="Horizontálne(S-J)" :value="schedule.sunRiseAbsHor" type="number"/>
+        <q-input stack-label="Vertikálne (V-Z)" :value="schedule.sunRiseAbsVer" type="number"/>
+      </q-card-main>
+    </q-card>
+    <q-card class="q-ma-md" inline>
+      <q-card-title>
+        Parkovacia pozícia
+      </q-card-title>
+      <q-card-separator/>
+      <q-card-main>
+        <q-datetime type="time" v-model="sunSetTime" stack-label="Čas" format24h/>
+        <q-input stack-label="Horizontálne(S-J)" :value="schedule.sunSetAbsHor" type="number"/>
+        <q-input stack-label="Vertikálne (V-Z)" :value="schedule.sunSetAbsVer" type="number"/>
+      </q-card-main>
+    </q-card>
+    <q-card class="q-ma-md" inline>
+    <q-card-title>
+      Veľkosť kroku
+    </q-card-title>
+    <q-card-separator/>
+    <q-card-main>
+      <q-input stack-label="Horizontálna veľkosť kroku" :value="schedule.horizontalStep" type="number"/>
+      <q-input stack-label="Vertikálna veľkosť kroku" :value="schedule.verticalStep" type="number"/>
+    </q-card-main>
+  </q-card>
+        <q-table
              selection="single"
              :selected.sync="rowSelected"
              :data="tableData"
              :pagination.sync="serverPagination"
              :columns="columns"
-             row-key="id"
+             :row-key="id"
     >
       <template slot="top-right" slot-scope="props">
-        <q-btn
-            icon="delete"
-            :disable="rowSelected.length===0"
-            label="Vymazať"
-            @click="deleteSolar"
-        />
-        <q-btn icon="add" label="Pridať" @click="addSolarEntry=true" disable/>
+<!--        <q-btn-->
+<!--            icon="delete"-->
+<!--            :disable="rowSelected.length===0"-->
+<!--            label="Vymazať"-->
+<!--            @click="deleteSolar"-->
+<!--        />-->
+<!--        <q-btn icon="add" label="Pridať" @click="addSolarEntry=true" disable/>-->
       </template>
       <q-tr slot="body" slot-scope="props" :props="props">
         <q-td auto-width>
@@ -68,15 +97,16 @@ import {Vue} from 'vue-property-decorator';
 import {Loading} from 'quasar';
 import cfg from "../../heating-config";
 import axios from 'axios';
+import moment from "moment";
 
 require('url-search-params-polyfill');
 
 export default Vue.extend({
   data() {
     return {
-      modifyFor: null,
       month: null,
-      date: null,
+      sunRiseTime : null,
+      sunSetTime : null,
       serverPagination: {
         page: 1,
         rowsNumber: 50 // specifying this determines pagination is server-side
@@ -131,16 +161,7 @@ export default Vue.extend({
           value: '12'
         }
       ],
-      selectOptions: [
-        {
-          label: 'Celý mesiac',
-          value: 'month'
-        },
-        {
-          label: 'Deň',
-          value: 'day'
-        }
-      ],
+      schedule:{},
       tableData: [],
       inputPins: [],
       pagination: {
@@ -165,13 +186,6 @@ export default Vue.extend({
         field: 'minute',
         sortable: true,
       }, {
-        name: 'ignore',
-        required: true,
-        label: 'Ignorovať jas',
-        align: 'left',
-        field: 'ignore',
-        sortable: true,
-      }, {
         name: 'hor',
         required: true,
         label: 'Horizontálne',
@@ -191,14 +205,16 @@ export default Vue.extend({
   methods: {
     loadCurrentState() {
       Loading.show();
-      let url = cfg.BASE_URL + "solar";
-      if (this.modifyFor === 'day' && this.date !== null)
-        url = url + '?date=' + this.date.slice(0, 10);
-      else
-        url = url + '?month=' + this.month;
+      let url = cfg.BASE_URL + "solar?month=" + this.month;
       axios.get(url)
           .then(response => {
-            this.tableData = response.data;
+            this.tableData = response.data.positions;
+            for (let i = 0; i<this.tableData.length;i++){
+              this.tableData[i].id = this.tableData[i].hour +":" +this.tableData[i].minute;
+            }
+            this.schedule = response.data;
+            this.sunRiseTime = moment(response.data.sunRiseHour+':'+response.data.sunRiseMinute,'HH:mm');
+            this.sunSetTime = moment(response.data.sunSetHour+':'+response.data.sunSetMinute,'HH:mm');
             Loading.hide();
           })
           .catch(error => {
@@ -207,11 +223,7 @@ export default Vue.extend({
           });
     },
     editSolar(row: any) {
-      let url = cfg.BASE_URL + "solar/cmd/update";
-      if (this.modifyFor === 'day' && this.date !== null)
-        url = url + '?date=' + this.date.slice(0, 10);
-      else
-        url = url + '?month=' + this.month;
+      let url = cfg.BASE_URL + "solar/cmd/update?month=" + this.month;
       Loading.show();
       axios.put(url, row, {method: "PUT"})
           .then(response => {
@@ -224,11 +236,7 @@ export default Vue.extend({
           });
     },
     deleteSolar() {
-      let url = cfg.BASE_URL + "solar/cmd/delete";
-      if (this.modifyFor === 'day' && this.date !== null)
-        url = url + '?date=' + this.date.slice(0, 10);
-      else
-        url = url + '?month=' + this.month;
+      let url = cfg.BASE_URL + "solar/cmd/delete?month=" + this.month;
       Loading.show();
       axios.post(url, this.rowSelected, {method: "POST"})
           .then(response => {
@@ -242,6 +250,8 @@ export default Vue.extend({
     }
   },
   mounted(): void {
+    this.month = (moment().month()+1).toString();
+    this.loadCurrentState();
   }
 });
 </script>
