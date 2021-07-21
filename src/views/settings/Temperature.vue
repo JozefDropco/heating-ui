@@ -176,7 +176,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
-            alert(error)
+            console.log(error)
           });
       axios.get(cfg.BASE_URL + "temp/freeDeviceIds")
           .then(response => {
@@ -189,7 +189,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
-            alert(error)
+            console.log(error)
           });
     },
     saveMeasureplace() {
@@ -201,7 +201,7 @@ export default Vue.extend({
             this.loadCurrentState();
           })
           .catch(error => {
-            alert(error)
+            console.log(error)
           });
     },
     editMeasureplace(row: any) {
@@ -210,7 +210,7 @@ export default Vue.extend({
             this.loadCurrentState();
           })
           .catch(error => {
-            alert(error)
+            console.log(error)
           });
     },
     deleteMeasurePlace() {
@@ -219,7 +219,7 @@ export default Vue.extend({
             this.loadCurrentState();
           })
           .catch(error => {
-            alert(error)
+            console.log(error)
           });
     }
   },

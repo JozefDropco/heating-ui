@@ -57,7 +57,7 @@
                 })
                     .catch(error => {
                         Loading.hide();
-                        alert(error)
+                        console.log(error)
                     });
 
             },
@@ -93,7 +93,7 @@
                     })
                     .catch(error => {
                         Loading.hide();
-                        alert(error)
+                        console.log(error)
                     });
             }
         },

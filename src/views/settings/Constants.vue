@@ -90,7 +90,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
-            alert(error)
+            console.log(error)
           });
     },
     modify(row:any){
@@ -99,7 +99,7 @@ export default Vue.extend({
             this.loadCurrentState();
           })
           .catch(error => {
-            alert(error)
+            console.log(error)
           });
     }
   },

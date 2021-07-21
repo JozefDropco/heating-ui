@@ -219,7 +219,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
-            alert(error)
+            console.log(error)
           });
     },
     editSolar(row: any) {
@@ -232,7 +232,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
-            alert(error)
+            console.log(error)
           });
     },
     deleteSolar() {
@@ -245,7 +245,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
-            alert(error)
+            console.log(error)
           });
     }
   },

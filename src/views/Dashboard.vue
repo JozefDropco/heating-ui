@@ -92,7 +92,7 @@ export default Vue.extend({
           this.watering = !set.has('--noWatering');
         })
         .catch(error => {
-          alert(error)
+          console.log(error)
         });
   }
 });

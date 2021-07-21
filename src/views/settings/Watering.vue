@@ -162,7 +162,7 @@
                     })
                     .catch(error => {
                         Loading.hide();
-                        alert(error)
+                        console.log(error)
                     });
             },
             editWatering() {

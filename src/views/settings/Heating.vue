@@ -213,7 +213,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
-            alert(error)
+            console.log(error)
           });
     },
     editHeating(row: any) {
@@ -224,7 +224,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
-            alert(error)
+            console.log(error)
           });
     },
     saveSolarHeating(){
@@ -244,7 +244,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
-            alert(error)
+            console.log(error)
           });
     },
 
@@ -257,7 +257,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
-            alert(error)
+            console.log(error)
           });
     }
   },

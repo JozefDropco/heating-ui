@@ -162,7 +162,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
-            alert(error)
+            console.log(error)
           });
     },
     loadDelta() {
@@ -184,7 +184,7 @@ export default Vue.extend({
             this.blinkIfNeeded()
           })
           .catch(error => {
-            alert(error)
+            console.log(error)
           });
     },
     blinkIfNeeded() {

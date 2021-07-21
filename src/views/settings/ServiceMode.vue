@@ -55,7 +55,8 @@ export default Vue.extend({
       state: false,
       refreshIntervalId: null,
       outputPins: [],
-      inputPins: []
+      inputPins: [],
+      active:false
     }
   },
   methods: {
@@ -65,7 +66,7 @@ export default Vue.extend({
             this.state = response.data.state;
           })
           .catch(error => {
-            alert(error)
+            console.log(error)
           });
       axios.get(cfg.BASE_URL + "port/outputs")
           .then(response => {
@@ -89,7 +90,7 @@ export default Vue.extend({
             }
           })
           .catch(error => {
-            alert(error)
+            console.log(error)
           });
       axios.get(cfg.BASE_URL + "port/inputs")
           .then(response => {
@@ -113,8 +114,9 @@ export default Vue.extend({
             }
           })
           .catch(error => {
-            alert(error)
+            console.log(error)
           });
+      if (this.active) setTimeout(this.loadCurrentState,1000)
     },
     handleStateChange() {
       Loading.show();
@@ -125,7 +127,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
-            alert(error)
+            console.log(error)
           });
     },
     toggleOutputState(output: any) {
@@ -147,7 +149,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
-            alert(error)
+            console.log(error)
           });
     }
   },
@@ -157,11 +159,11 @@ export default Vue.extend({
     }
   },
   mounted(): void {
+    this.active=true
     this.loadCurrentState();
-    this.refreshIntervalId = setInterval(this.loadCurrentState, 1000);
   },
   beforeDestroy() {
-    clearInterval(this.refreshIntervalId);
+    this.active=false
   }
 })
 </script>

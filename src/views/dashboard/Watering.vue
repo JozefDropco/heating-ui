@@ -33,7 +33,7 @@ export default Vue.extend({
             this.pumpRunning = response.data['pumpRunning'];
           })
           .catch(error => {
-            alert(error)
+            console.log(error)
           });
     },
     loadDelta() {
@@ -44,7 +44,7 @@ export default Vue.extend({
             this.pumpRunning = response.data['pumpRunning'];
           })
           .catch(error => {
-            alert(error)
+            console.log(error)
           });
     }
   },
