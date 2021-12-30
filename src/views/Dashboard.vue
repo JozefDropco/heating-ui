@@ -3,6 +3,15 @@
     <div>
       <q-card v-if="heating" class="q-ma-md" inline>
         <q-card-title>
+          Akcie
+        </q-card-title>
+        <q-card-separator/>
+        <q-card-main>
+          <actions/>
+        </q-card-main>
+      </q-card>
+      <q-card v-if="heating" class="q-ma-md" inline>
+        <q-card-title>
           Teploty
         </q-card-title>
         <q-card-separator/>
@@ -72,10 +81,11 @@ import Watering from './dashboard/Watering.vue'
 import Stats from './dashboard/Stats.vue'
 import Logs from './dashboard/Logs.vue'
 import Heating from './dashboard/Heating.vue'
+import Actions from './dashboard/Actions.vue'
 
 
 export default Vue.extend({
-  components: {Temperature, Solar, Watering, Stats, Logs, Heating},
+  components: {Temperature, Solar, Watering, Stats, Logs, Heating, Actions},
   data() {
     return {
       heating: false,

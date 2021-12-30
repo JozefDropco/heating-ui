@@ -114,9 +114,6 @@ export default Vue.extend({
     }
   },
   mounted(): void {
-    let date = new Date();
-    date.setDate(this.fromDate.getDate() - 3);
-    this.fromDate = date;
     this.loadCurrentState();
     this.refreshIntervalId = setInterval(this.loadDelta, 5000);
   },
