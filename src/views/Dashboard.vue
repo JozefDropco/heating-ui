@@ -1,71 +1,48 @@
 <template>
   <div class="q-pa-md">
     <div>
-      <q-card v-if="heating" class="q-ma-md" inline>
-        <q-card-title>
-          Akcie
-        </q-card-title>
-        <q-card-separator/>
-        <q-card-main>
+      <q-tabs value="solar" >
+        <q-tab v-if="heating" slot="title" name="actions" label="Akcie">
+        </q-tab>
+        <q-tab v-if="heating" slot="title" name="temps" label="Teploty">
+        </q-tab>
+        <q-tab  v-if="solar" slot="title" name="solar" label="Kolektory" :default="true">
+        </q-tab>
+        <q-tab  v-if="watering" slot="title" name="watering" label="Zavlažovanie">
+        </q-tab>
+        <q-tab  v-if="heating" slot="title" name="heating" label="Kúrenie">
+        </q-tab>
+        <q-tab  slot="title" name="stats" label="Štatistiky">
+        </q-tab>
+        <q-tab  slot="title" name="logs" label="Hlásenia">
+        </q-tab>
+        <q-tab slot="title" name="settings" label="Nastavenia"  />
+        <q-tab-pane name="actions">
           <actions/>
-        </q-card-main>
-      </q-card>
-      <q-card v-if="heating" class="q-ma-md" inline>
-        <q-card-title>
-          Teploty
-        </q-card-title>
-        <q-card-separator/>
-        <q-card-main>
+        </q-tab-pane>
+        <q-tab-pane name="temps">
           <temperature/>
-        </q-card-main>
-      </q-card>
-      <q-card v-if="solar" class="q-ma-md" inline>
-        <q-card-title>
-          Kolektory
-        </q-card-title>
-        <q-card-separator/>
-        <q-card-main>
+        </q-tab-pane>
+        <q-tab-pane name="solar">
           <solar/>
-        </q-card-main>
-      </q-card>
-      <q-card v-if="watering" class="q-ma-md" inline>
-        <q-card-title>
-          Zavlažovanie
-        </q-card-title>
-        <q-card-separator/>
-        <q-card-main>
+        </q-tab-pane>
+        <q-tab-pane name="watering">
           <watering/>
-        </q-card-main>
-      </q-card>
-
-      <q-card v-if="heating" class="q-ma-md" inline>
-        <q-card-title>
-          Kúrenie
-        </q-card-title>
-        <q-card-separator/>
-        <q-card-main>
+        </q-tab-pane>
+        <q-tab-pane name="heating">
           <heating/>
-        </q-card-main>
-      </q-card>
-      <q-card class="q-ma-md" inline>
-        <q-card-title>
-          Štatistiky
-        </q-card-title>
-        <q-card-separator/>
-        <q-card-main>
+        </q-tab-pane>
+        <q-tab-pane name="stats">
           <stats/>
-        </q-card-main>
-      </q-card>
-
-      <q-card class="q-ma-md" inline>
-        <q-card-title>
-          Hlásenia
-        </q-card-title>
-        <q-card-separator/>
-        <q-card-main>
+        </q-tab-pane>
+        <q-tab-pane name="logs">
           <logs/>
-        </q-card-main>
-      </q-card>
+        </q-tab-pane>
+
+        <q-tab-pane name="settings">
+          <left-menu/>
+        </q-tab-pane>
+      </q-tabs>
     </div>
 
   </div>
@@ -82,10 +59,11 @@ import Stats from './dashboard/Stats.vue'
 import Logs from './dashboard/Logs.vue'
 import Heating from './dashboard/Heating.vue'
 import Actions from './dashboard/Actions.vue'
+import LeftMenu from "@/views/Menu.vue";
 
 
 export default Vue.extend({
-  components: {Temperature, Solar, Watering, Stats, Logs, Heating, Actions},
+  components: {LeftMenu, Temperature, Solar, Watering, Stats, Logs, Heating, Actions},
   data() {
     return {
       heating: false,
@@ -102,6 +80,7 @@ export default Vue.extend({
           this.watering = !set.has('--noWatering');
         })
         .catch(error => {
+          // eslint-disable-next-line
           console.log(error)
         });
   }
