@@ -24,8 +24,8 @@
       <tr v-for="item in remainingPositions" :key="item.hour+':'+item.minute">
         <td>{{ item.hour }}:{{ item.minute.toString().padStart(2, '0') }}</td>
         <td>{{ item.moveType }}</td>
-        <td>{{ item.vert }}</td>
-        <td>{{ item.hor }}</td>
+        <td>{{ getVertMessage(item.vert) }}</td>
+        <td>{{ getHorMessage(item.hor) }}</td>
       </tr>
     </table>
   </div>
@@ -145,6 +145,26 @@ export default Vue.extend({
     }
   },
   methods: {
+    getHorMessage(val:number){
+      let message =""+Math.abs(val);
+      if (val===0)return message;
+      if (val<0) {
+        message+= " bliknutí (Západ)"
+      } else {
+        message+= " bliknutí (Východ)"
+      }
+      return message;
+    },
+    getVertMessage(val:number){
+      let message =""+Math.abs(val);
+      if (val===0)return message;
+      if (val<0) {
+        message+= " bliknutí (Sever)"
+      } else {
+        message+= " bliknutí (Juh)"
+      }
+      return message;
+    },
     loadCurrentState() {
 
       axios.get(cfg.BASE_URL + "solar/currentState")
@@ -162,6 +182,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
+            // eslint-disable-next-line
             console.log(error)
           });
     },
@@ -184,6 +205,7 @@ export default Vue.extend({
             this.blinkIfNeeded()
           })
           .catch(error => {
+            // eslint-disable-next-line
             console.log(error)
           });
     },
@@ -196,6 +218,7 @@ export default Vue.extend({
           marker: {size: 0},
           label: {text: "Západ", style:{cssClass:''}}
         };
+
         if (this.blinkingDirections.indexOf('WEST') !==-1) west.label.style.cssClass = 'blink';
         let east = {
           x: 650,
