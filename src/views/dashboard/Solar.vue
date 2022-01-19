@@ -43,7 +43,6 @@ export default Vue.extend({
     return {
       refreshIntervalId: null,
       currentBlinkDirection: [],
-      blinkingDirections: [],
       remainingPositions: [],
       enoughLight: false,
       strongWind: false,
@@ -201,17 +200,18 @@ export default Vue.extend({
               chart.refresh()
             }
             var movement: Array<String> = response.data['movement'];
-            this.blinkingDirections = movement;
-            this.blinkIfNeeded()
+            this.blinkIfNeeded(movement)
           })
           .catch(error => {
             // eslint-disable-next-line
             console.log(error)
           });
     },
-    blinkIfNeeded() {
+    blinkIfNeeded(movement:Array<String>) {
       let chart: any = this.$refs.chart;
-      if (this.currentBlinkDirection.toString() !== this.blinkingDirections.toString()) {
+      const a1val = (val:any) => this.currentBlinkDirection.includes(val);
+      const a2val = (val:any) => movement.includes(val);
+      if (!this.currentBlinkDirection.every(a2val) || !movement.every(a1val)) {
         let west = {
           x: 10,
           y: 215,
@@ -219,34 +219,35 @@ export default Vue.extend({
           label: {text: "Západ", style:{cssClass:''}}
         };
 
-        if (this.blinkingDirections.indexOf('WEST') !==-1) west.label.style.cssClass = 'blink';
+        if (movement.includes('WEST')) west.label.style.cssClass = 'blink';
         let east = {
           x: 650,
           y: 215,
           marker: {size: 0},
           label: {text: "Východ", style:{cssClass:''}}
         };
-        if (this.blinkingDirections.indexOf('EAST')!==-1) east.label.style.cssClass = 'blink';
+        if (movement.includes('EAST')) east.label.style.cssClass = 'blink';
         let north = {
           x: 345,
           y: 0,
           marker: {size: 0},
           label: {text: "Sever", style:{cssClass:''}}
         };
-        if (this.blinkingDirections.indexOf('NORTH')!==-1) north.label.style.cssClass = 'blink';
+        if (movement.includes('NORTH')) north.label.style.cssClass = 'blink';
         let south = {
           x: 345,
           y: 430,
           marker: {size: 0},
           label: {text: "Juh", style:{cssClass:''}}
         };
-        if (this.blinkingDirections.indexOf('SOUTH')!==-1) south.label.style.cssClass = 'blink';
+        if (movement.includes('SOUTH')) south.label.style.cssClass = 'blink';
         chart.clearAnnotations()
         chart.addPointAnnotation(west,true)
         chart.addPointAnnotation(east,true)
         chart.addPointAnnotation(north,true)
         chart.addPointAnnotation(south,true)
-        this.currentBlinkDirection = this.blinkingDirections
+        this.currentBlinkDirection.splice(0);
+        movement.forEach(val=>this.currentBlinkDirection.push(val))
       }
     }
   },
