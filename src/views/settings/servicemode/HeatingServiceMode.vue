@@ -56,7 +56,7 @@ export default Vue.extend({
   },
   methods: {
     loadCurrentState() {
-      axios.get(cfg.BASE_URL + "watering/serviceMode")
+      axios.get(cfg.BASE_URL + "heating/serviceMode")
           .then(response => {
             this.state = response.data.state;
           })
@@ -64,7 +64,7 @@ export default Vue.extend({
             // eslint-disable-next-line
             console.log(error)
           });
-      axios.get(cfg.BASE_URL + "solar/port/outputs")
+      axios.get(cfg.BASE_URL + "heating/port/outputs")
           .then(response => {
             for (let i = 0; i < response.data.length; i++) {
               var found: boolean = false;
@@ -89,7 +89,7 @@ export default Vue.extend({
             // eslint-disable-next-line
             console.log(error)
           });
-      axios.get(cfg.BASE_URL + "solar/port/inputs")
+      axios.get(cfg.BASE_URL + "heating/port/inputs")
           .then(response => {
             for (let i = 0; i < response.data.length; i++) {
               var found: boolean = false;
@@ -118,7 +118,7 @@ export default Vue.extend({
     },
     handleStateChange() {
       Loading.show();
-      axios.post(cfg.BASE_URL + "solar/serviceMode?state=" + this.state)
+      axios.post(cfg.BASE_URL + "heating/serviceMode?state=" + this.state)
           .then(response => {
             this.state = response.data.state;
             Loading.hide();
@@ -131,7 +131,7 @@ export default Vue.extend({
     },
     toggleOutputState(output: any) {
       Loading.show();
-      axios.post(cfg.BASE_URL + "solar/port/output/" + output.refcd, output.value, {
+      axios.post(cfg.BASE_URL + "heating/port/output/" + output.refcd, output.value, {
         headers: {
           'Content-Type': 'application/json'
         }
