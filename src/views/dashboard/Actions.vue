@@ -1,9 +1,9 @@
 <template>
   <div>
-    <q-btn  ref="parkPos" :color="parkingPositionColor" :disable="parkingDisabled" v-html="'Parkovacia <br>poloha<br> kolektorov'"  class="actions" @click="parkingPosition" :title="parkingDisabled ? 'V parkovacej polohe':''"/>
+    <q-btn  :color="parkingPositionColor" v-html="'Parkovacia <br>poloha<br> kolektorov'"  class="actions" @click="parkingPosition" />
     <br/>
     <br/>
-    <q-btn color="primary" v-html="'Ohrev <br> vody v TA3 <br> plynovým <br> kotlom'" class="actions" disable/>
+    <q-btn :color="heatingColor" v-html="'Ohrev <br> vody v TA3 <br> plynovým <br> kotlom'" class="actions" @click="oneTimeHeat" />
 
   </div>
 </template>
@@ -20,21 +20,33 @@ export default Vue.extend({
     return {
       refreshIntervalId: null,
       parkingPositionColor: 'primary',
-      parkingDisabled:true
+      heatingColor: 'primary',
     }
   },
   methods: {
     loadCurrentState() {
       axios.get(cfg.BASE_URL + "solar/parkingPosition").then(response=>{
-        this.parkingDisabled = response.data;
-        if (this.parkingDisabled) this.parkingPositionColor= 'green';
+        if (response.data) this.parkingPositionColor= 'green'; else this.parkingPositionColor = 'primary';
+      });
+      axios.get(cfg.BASE_URL + "heating/manualWaterBoilerHeat").then(response=>{
+        if (response.data) this.heatingColor= 'green'; else this.heatingColor='primary';
       });
     },
     parkingPosition() {
       axios.post(cfg.BASE_URL + "solar/parkingPosition")
           .then(response => {
-            this.parkingDisabled = true;
-            if (this.parkingDisabled) this.parkingPositionColor= 'green';
+            if (response.data) this.parkingPositionColor= 'green'; else this.parkingPositionColor = 'primary';
+            Loading.hide();
+          })
+          .catch(error => {
+            Loading.hide();
+            console.log(error)
+          });
+    },
+    oneTimeHeat() {
+      axios.post(cfg.BASE_URL + "heating/manualWaterBoilerHeat")
+          .then(response => {
+            if (response.data) this.heatingColor= 'green'; else this.heatingColor = 'primary';
             Loading.hide();
           })
           .catch(error => {
