@@ -65,7 +65,7 @@
               <q-checkbox v-model="props.row.boilerBlock" disable/>
               <q-popup-edit v-model="props.row.boilerBlock" title="Upraviť" buttons label-set="Uložiť"
                             label-cancel="Zavrieť"
-                            @save="(v,iv)=>editSolar(props.row)">
+                            @save="(v,iv)=>editHeating(props.row)">
                 <q-checkbox v-model="props.row.boilerBlock" label-always/>
               </q-popup-edit>
             </q-td>
