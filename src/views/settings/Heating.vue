@@ -38,13 +38,6 @@
                           <q-datetime-picker type="time" v-model="props.row.fromTime"  format24h/>
                         </q-popup-edit>
             </q-td>
-            <q-td key="toTime" :props="props">
-              {{ formatTime(props.row.toTime) }}
-                        <q-popup-edit v-model="props.row.toTime" title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
-                                      @save="(v,iv)=>editHeating(props.row)">
-                          <q-datetime-picker type="time" v-model="props.row.toTime" format24h/>
-                        </q-popup-edit>
-            </q-td>
             <q-td key="threeWayValveStartDiff" :props="props">
               {{ props.row.threeWayValveStartDiff }}
               <q-popup-edit v-model="props.row.threeWayValveStartDiff" title="Upraviť" buttons label-set="Uložiť"
@@ -83,7 +76,6 @@
         </q-toolbar>
         <div class="layout-padding">
           <q-datetime type="time" format24h input stack-label="Od" v-model="fromTime"/>
-          <q-datetime type="time" format24h input stack-label="Do" v-model="toTime"/>
           <q-input type="number" float-label="Zapnúť ohrev pri"  v-model="diffStart"/>
           <q-input type="number" float-label="Zapnúť Bypass pri"  v-model="diffStop"/>
           <q-checkbox  label="Blokovať ohrev kotlom"  v-model="boilerBlocked"/>
@@ -96,6 +88,7 @@
           />
           <q-btn
               color="primary"
+              @click="addSolarEntry=false"
               v-close-overlay
               label="Zavrieť"
           />
@@ -120,7 +113,6 @@ export default Vue.extend({
     return {
       addHeating:false,
       fromTime:null,
-      toTime:null,
       diffStart:10,
       diffStop:0,
       boilerBlocked:false,
@@ -165,13 +157,6 @@ export default Vue.extend({
         label: 'Od (čas)',
         align: 'left',
         field: 'fromTime',
-        sortable: true,
-      }, {
-        name: 'toTime',
-        required: true,
-        label: 'Do (čas)',
-        align: 'left',
-        field: 'toTime',
         sortable: true,
       }, {
         name: 'threeWayValveStartDiff',
@@ -232,7 +217,6 @@ export default Vue.extend({
       var newItem  ={
         'fromTime':this.fromTime,
         'day':this.modifyFor,
-        'toTime':this.toTime,
         'boilerBlock':this.boilerBlocked,
         threeWayValveStartDiff:this.diffStart,
         threeWayValveStopDiff:this.diffStop
