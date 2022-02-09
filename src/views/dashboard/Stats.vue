@@ -188,18 +188,18 @@ export default Vue.extend({
         this.changeMonth();
       }
       if (this.option === 'year') {
-        this.fromDate = moment().set('year', parseInt(this.year)).startOf('year').toDate();
+        this.fromDate = moment().set('year', parseInt(this.year)).startOf('year').add(1,'day').toDate();
         this.toDate = moment().set('year', parseInt(this.year)).endOf('year').toDate();
         this.loadCurrentState(true);
       }
     },
     changeWeek() {
-      this.fromDate = moment().set('year', parseInt(this.year)).set('isoWeek', parseInt(this.week)).startOf('isoWeek').toDate();
+      this.fromDate = moment().set('year', parseInt(this.year)).set('isoWeek', parseInt(this.week)).startOf('isoWeek').add(1,'day').toDate();
       this.toDate = moment().set('year', parseInt(this.year)).set('isoWeek', parseInt(this.week)).endOf('isoWeek').toDate();
       this.loadCurrentState(true);
     },
     changeMonth() {
-      this.fromDate = moment().set('year', parseInt(this.year)).set('month', parseInt(this.month)).startOf('month').toDate();
+      this.fromDate = moment().set('year', parseInt(this.year)).set('month', parseInt(this.month)).startOf('month').add(1,'day').toDate();
       this.toDate = moment().set('year', parseInt(this.year)).set('month', parseInt(this.month)).endOf('month').toDate();
       this.loadCurrentState(true);
     },
@@ -209,15 +209,15 @@ export default Vue.extend({
         this.toDate = new Date();
       }
       if (this.option === 'week') {
-        this.fromDate = moment().startOf('isoWeek').toDate();
+        this.fromDate = moment().startOf('isoWeek').add(1,'day').toDate();
         this.toDate = moment().endOf('isoWeek').toDate();
       }
       if (this.option === 'month') {
-        this.fromDate = moment().startOf('month').toDate();
+        this.fromDate = moment().startOf('month').add(1,'day').toDate();
         this.toDate = moment().endOf('month').toDate();
       }
       if (this.option === 'year') {
-        this.fromDate = moment().startOf('year').toDate();
+        this.fromDate = moment().startOf('year').add(1,'day').toDate();
         this.toDate = moment().endOf('year').toDate();
       }
       this.loadCurrentState(true);
