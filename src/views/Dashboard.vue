@@ -1,22 +1,22 @@
 <template>
   <div class="q-pa-md">
     <div>
-      <q-tabs value="solar" >
+      <q-tabs :value="tabValue" @select="tabchange">
         <q-tab v-if="heating" slot="title" name="actions" label="Akcie">
         </q-tab>
         <q-tab v-if="heating" slot="title" name="temps" label="Teploty">
         </q-tab>
-        <q-tab  v-if="solar" slot="title" name="solar" label="Kolektory" :default="true">
+        <q-tab v-if="solar" slot="title" name="solar" label="Kolektory" :default="true">
         </q-tab>
-        <q-tab  v-if="watering" slot="title" name="watering" label="Zavlažovanie">
+        <q-tab v-if="watering" slot="title" name="watering" label="Zavlažovanie">
         </q-tab>
-        <q-tab  v-if="heating" slot="title" name="heating" label="Kúrenie">
+        <q-tab v-if="heating" slot="title" name="heating" label="Kúrenie">
         </q-tab>
-        <q-tab  slot="title" name="stats" label="Štatistiky">
+        <q-tab slot="title" name="stats" label="Štatistiky">
         </q-tab>
-        <q-tab  slot="title" name="logs" label="Hlásenia">
+        <q-tab slot="title" name="logs" label="Hlásenia">
         </q-tab>
-        <q-tab slot="title" name="settings" label="Nastavenia"  />
+        <q-tab slot="title" name="settings" label="Nastavenia"/>
         <q-tab-pane name="actions">
           <actions/>
         </q-tab-pane>
@@ -66,12 +66,16 @@ export default Vue.extend({
   components: {LeftMenu, Temperature, Solar, Watering, Stats, Logs, Heating, Actions},
   data() {
     return {
+      tabValue: 'solar',
       heating: false,
       watering: false,
       solar: false,
     }
   },
   mounted(): void {
+    let tabValue: any = this.$route.query.tabValue;
+    if (tabValue !== undefined)
+      this.tabValue = tabValue;
     axios.get(cfg.BASE_URL + "configuration")
         .then(response => {
           let set = new Set(response.data);
@@ -83,6 +87,12 @@ export default Vue.extend({
           // eslint-disable-next-line
           console.log(error)
         });
+  },
+  methods: {
+    tabchange(value:any) {
+
+      this.$router.push({ query: { tabValue: value}});
+    }
   }
 });
 </script>

@@ -3,6 +3,7 @@
 
       <q-breadcrumbs>
         <q-breadcrumbs-el label="Domov" to="/" />
+        <q-breadcrumbs-el label="Nastavenia" to="/?tabValue=settings"/>
         <q-breadcrumbs-el label="Zavlažovanie" to="/Watering" />
       </q-breadcrumbs>
       <br/>

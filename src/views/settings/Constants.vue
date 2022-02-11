@@ -2,6 +2,7 @@
   <div class="q-pa-md">
     <q-breadcrumbs>
       <q-breadcrumbs-el label="Domov" to="/"/>
+      <q-breadcrumbs-el label="Nastavenia" to="/?tabValue=settings"/>
       <q-breadcrumbs-el label="Konštanty" to="/Constants"/>
     </q-breadcrumbs>
     <br/>

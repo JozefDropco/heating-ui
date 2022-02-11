@@ -2,6 +2,7 @@
   <div class="marginLeft5rem marginTop5rem">
     <q-breadcrumbs>
       <q-breadcrumbs-el label="Domov" to="/"/>
+      <q-breadcrumbs-el label="Nastavenia" to="/?tabValue=settings"/>
       <q-breadcrumbs-el label="Servisné menu" to="/ServiceMode"/>
     </q-breadcrumbs>
     <br/>
@@ -12,7 +13,6 @@
       </q-tab>
       <q-tab slot="title" name="watering" label="Zavlažovanie">
       </q-tab>
-      <q-tab slot="title" name="settings" label="Nastavenia"  />
       <q-tab-pane name="solar">
         <solar/>
       </q-tab-pane>
@@ -21,9 +21,6 @@
       </q-tab-pane>
       <q-tab-pane name="watering">
         <watering/>
-      </q-tab-pane>
-      <q-tab-pane name="settings">
-        <left-menu/>
       </q-tab-pane>
     </q-tabs>
   </div>
@@ -34,11 +31,10 @@ import {Vue} from 'vue-property-decorator';
 import Solar from './servicemode/SolarServiceMode.vue';
 import Watering from './servicemode/WateringServiceMode.vue';
 import Heating from './servicemode/HeatingServiceMode.vue';
-import LeftMenu from "@/views/Menu.vue";
 
 require('url-search-params-polyfill');
 export default Vue.extend({
-  components: {Solar, Watering, Heating,LeftMenu}
+  components: {Solar, Watering, Heating}
 })
 </script>
 <style>

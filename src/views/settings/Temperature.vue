@@ -2,6 +2,7 @@
   <div style="margin-top: 20px">
     <q-breadcrumbs>
       <q-breadcrumbs-el label="Domov" to="/" />
+      <q-breadcrumbs-el label="Nastavenia" to="/?tabValue=settings"/>
       <q-breadcrumbs-el label="Teploty" to="/Temperature" />
     </q-breadcrumbs>
     <br/>

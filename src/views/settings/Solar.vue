@@ -2,6 +2,7 @@
   <div class="marginLeft5rem marginTop5rem">
     <q-breadcrumbs>
       <q-breadcrumbs-el label="Domov" to="/"/>
+      <q-breadcrumbs-el label="Nastavenia" to="/?tabValue=settings"/>
       <q-breadcrumbs-el label="Solár" to="/Solar"/>
     </q-breadcrumbs>
     <br/>
