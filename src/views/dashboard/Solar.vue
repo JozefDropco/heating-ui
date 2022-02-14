@@ -42,12 +42,15 @@ export default Vue.extend({
   data() {
     return {
       refreshIntervalId: null,
-      currentBlinkDirection: [],
       remainingPositions: [],
       enoughLight: false,
       strongWind: false,
       overHeated: false,
       posSeries: [],
+      west: false,
+      east: false,
+      north: false,
+      south: false,
       posOptions: {
         chart: {
           type: 'scatter',
@@ -144,23 +147,23 @@ export default Vue.extend({
     }
   },
   methods: {
-    getHorMessage(val:number){
-      let message =""+Math.abs(val);
-      if (val===0)return message;
-      if (val<0) {
-        message+= " bliknutí (Západ)"
+    getHorMessage(val: number) {
+      let message = "" + Math.abs(val);
+      if (val === 0) return message;
+      if (val < 0) {
+        message += " bliknutí (Západ)"
       } else {
-        message+= " bliknutí (Východ)"
+        message += " bliknutí (Východ)"
       }
       return message;
     },
-    getVertMessage(val:number){
-      let message =""+Math.abs(val);
-      if (val===0)return message;
-      if (val<0) {
-        message+= " bliknutí (Sever)"
+    getVertMessage(val: number) {
+      let message = "" + Math.abs(val);
+      if (val === 0) return message;
+      if (val < 0) {
+        message += " bliknutí (Sever)"
       } else {
-        message+= " bliknutí (Juh)"
+        message += " bliknutí (Juh)"
       }
       return message;
     },
@@ -177,6 +180,8 @@ export default Vue.extend({
             series['name'] = "Aktuálna pozícia";
             series['data'] = [[response.data['pos']['x'], response.data['pos']['y']]];
             this.posSeries.push(series);
+            var movement: Array<String> = response.data['movement'];
+            this.blinkIfNeeded(movement)
             Loading.hide();
           })
           .catch(error => {
@@ -207,47 +212,67 @@ export default Vue.extend({
             console.log(error)
           });
     },
-    blinkIfNeeded(movement:Array<String>) {
+    contains(movement: Array<String>, direction: string) {
+      for (let i = 0; i++; movement.length) {
+        if (movement[i] === direction) return true;
+      }
+      return false;
+    },
+    calculate(movement: Array<String>, direction: string, annotation: any, currentState: boolean, updater:Function) {
+      var containsDirection = this.contains(movement, direction);
+      if (currentState !== containsDirection) {
+        updater(containsDirection);
+        if (currentState) annotation.label.style.cssClass = 'blink';
+        return true;
+      }
+      return false;
+    },
+    blinkIfNeeded(movement: Array<String>) {
       let chart: any = this.$refs.chart;
-      const a1val = (val:any) => this.currentBlinkDirection.includes(val);
-      const a2val = (val:any) => movement.includes(val);
-      if (!this.currentBlinkDirection.every(a2val) || !movement.every(a1val)) {
-        let west = {
-          x: 10,
-          y: 215,
-          marker: {size: 0},
-          label: {text: "Západ", style:{cssClass:''}}
-        };
 
-        if (movement.includes('WEST')) west.label.style.cssClass = 'blink';
-        let east = {
-          x: 650,
-          y: 215,
-          marker: {size: 0},
-          label: {text: "Východ", style:{cssClass:''}}
-        };
-        if (movement.includes('EAST')) east.label.style.cssClass = 'blink';
-        let north = {
-          x: 345,
-          y: 0,
-          marker: {size: 0},
-          label: {text: "Sever", style:{cssClass:''}}
-        };
-        if (movement.includes('NORTH')) north.label.style.cssClass = 'blink';
-        let south = {
-          x: 345,
-          y: 430,
-          marker: {size: 0},
-          label: {text: "Juh", style:{cssClass:''}}
-        };
-        if (movement.includes('SOUTH')) south.label.style.cssClass = 'blink';
-        chart.clearAnnotations()
-        chart.addPointAnnotation(west,true)
-        chart.addPointAnnotation(east,true)
-        chart.addPointAnnotation(north,true)
-        chart.addPointAnnotation(south,true)
-        this.currentBlinkDirection.splice(0);
-        movement.forEach(val=>this.currentBlinkDirection.push(val))
+      let east = {
+        id: 'east',
+        x: 650,
+        y: 215,
+        marker: {size: 0},
+        label: {text: "Východ", style: {cssClass: ''}}
+      };
+      let west = {
+        id: 'west',
+        x: 10,
+        y: 215,
+        marker: {size: 0},
+        label: {text: "Západ", style: {cssClass: ''}}
+      };
+      let north = {
+        id: 'north',
+        x: 345,
+        y: 0,
+        marker: {size: 0},
+        label: {text: "Sever", style: {cssClass: ''}}
+      };
+      let south = {
+        id: 'south',
+        x: 345,
+        y: 430,
+        marker: {size: 0},
+        label: {text: "Juh", style: {cssClass: ''}}
+      };
+      if (this.calculate(movement, 'WEST', west, this.west,(val:boolean)=> this.west=val)) {
+        chart.removeAnnotation(west.id);
+        chart.addPointAnnotation(west, true)
+      }
+      if (this.calculate(movement, 'EAST', east, this.east,(val:boolean)=> this.east=val)) {
+        chart.removeAnnotation(east.id);
+        chart.addPointAnnotation(east, true)
+      }
+      if (this.calculate(movement, 'NORTH', north, this.north, (val:boolean)=> this.north=val)) {
+        chart.removeAnnotation(north.id);
+        chart.addPointAnnotation(north, true)
+      }
+      if (this.calculate(movement, 'SOUTH', south, this.south,(val:boolean)=> this.south=val)) {
+        chart.removeAnnotation(south.id);
+        chart.addPointAnnotation(south, true)
       }
     }
   },
