@@ -57,7 +57,8 @@
                 })
                     .catch(error => {
                         Loading.hide();
-                        console.log(error)
+                      // eslint-disable-next-line
+                      console.log(error)
                     });
 
             },
@@ -93,6 +94,7 @@
                     })
                     .catch(error => {
                         Loading.hide();
+                        // eslint-disable-next-line
                         console.log(error)
                     });
             }

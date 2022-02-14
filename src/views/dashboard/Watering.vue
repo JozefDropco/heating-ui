@@ -33,6 +33,7 @@ export default Vue.extend({
             this.pumpRunning = response.data['pumpRunning'];
           })
           .catch(error => {
+            // eslint-disable-next-line
             console.log(error)
           });
     },
@@ -44,6 +45,7 @@ export default Vue.extend({
             this.pumpRunning = response.data['pumpRunning'];
           })
           .catch(error => {
+            // eslint-disable-next-line
             console.log(error)
           });
     }

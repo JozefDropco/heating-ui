@@ -269,6 +269,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
+            // eslint-disable-next-line
             console.log(error)
           });
     },
@@ -301,6 +302,7 @@ export default Vue.extend({
           })
           .catch(error => {
             Loading.hide();
+            // eslint-disable-next-line
             console.log(error)
           });
     }

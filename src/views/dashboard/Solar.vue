@@ -107,31 +107,6 @@ export default Vue.extend({
             show: false
           }
         },
-        annotations: {
-          points: [
-            {
-              x: 10,
-              y: 215,
-              marker: {size: 0},
-              label: {text: "Západ"}
-            }, {
-              x: 650,
-              y: 215,
-              marker: {size: 0},
-              label: {text: "Východ"}
-            }, {
-              x: 345,
-              y: 0,
-              marker: {size: 0},
-              label: {text: "Sever"}
-            }, {
-              x: 345,
-              y: 430,
-              marker: {size: 0},
-              label: {text: "Juh"}
-            }
-          ]
-        },
         tooltip: {
           custom: function (_ref: any) {
             return (
@@ -168,7 +143,6 @@ export default Vue.extend({
       return message;
     },
     loadCurrentState() {
-
       axios.get(cfg.BASE_URL + "solar/currentState")
           .then(response => {
             this.strongWind = response.data['windy'];
@@ -181,7 +155,8 @@ export default Vue.extend({
             series['data'] = [[response.data['pos']['x'], response.data['pos']['y']]];
             this.posSeries.push(series);
             var movement: Array<String> = response.data['movement'];
-            this.blinkIfNeeded(movement)
+            var movement: Array<String> = response.data['movement'];
+            this.blinkIfNeeded(movement,true)
             Loading.hide();
           })
           .catch(error => {
@@ -213,21 +188,21 @@ export default Vue.extend({
           });
     },
     contains(movement: Array<String>, direction: string) {
-      for (let i = 0; i++; movement.length) {
+      for (var i = 0; i<movement.length;i++) {
         if (movement[i] === direction) return true;
       }
       return false;
     },
-    calculate(movement: Array<String>, direction: string, annotation: any, currentState: boolean, updater:Function) {
+    calculate(movement: Array<String>, direction: string, annotation: any, previousState: boolean, updater:Function) {
       var containsDirection = this.contains(movement, direction);
-      if (currentState !== containsDirection) {
+      if (previousState !== containsDirection) {
         updater(containsDirection);
-        if (currentState) annotation.label.style.cssClass = 'blink';
+        if (containsDirection) annotation.label.style.cssClass = 'blink';
         return true;
       }
       return false;
     },
-    blinkIfNeeded(movement: Array<String>) {
+    blinkIfNeeded(movement: Array<String>, initial:boolean= false) {
       let chart: any = this.$refs.chart;
 
       let east = {
@@ -258,19 +233,19 @@ export default Vue.extend({
         marker: {size: 0},
         label: {text: "Juh", style: {cssClass: ''}}
       };
-      if (this.calculate(movement, 'WEST', west, this.west,(val:boolean)=> this.west=val)) {
+      if (initial || this.calculate(movement, 'WEST', west, this.west,(val:boolean)=> this.west=val)) {
         chart.removeAnnotation(west.id);
         chart.addPointAnnotation(west, true)
       }
-      if (this.calculate(movement, 'EAST', east, this.east,(val:boolean)=> this.east=val)) {
+      if (initial || this.calculate(movement, 'EAST', east, this.east,(val:boolean)=> this.east=val)) {
         chart.removeAnnotation(east.id);
         chart.addPointAnnotation(east, true)
       }
-      if (this.calculate(movement, 'NORTH', north, this.north, (val:boolean)=> this.north=val)) {
+      if (initial || this.calculate(movement, 'NORTH', north, this.north, (val:boolean)=> this.north=val)) {
         chart.removeAnnotation(north.id);
         chart.addPointAnnotation(north, true)
       }
-      if (this.calculate(movement, 'SOUTH', south, this.south,(val:boolean)=> this.south=val)) {
+      if (initial || this.calculate(movement, 'SOUTH', south, this.south,(val:boolean)=> this.south=val)) {
         chart.removeAnnotation(south.id);
         chart.addPointAnnotation(south, true)
       }

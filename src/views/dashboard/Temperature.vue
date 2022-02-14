@@ -82,10 +82,12 @@ export default Vue.extend({
           .then(response => {
             this.lastDate = response.data['lastDate'];
             this.tempSeries = response.data['series'];
+            // eslint-disable-next-line
             Loading.hide();
           })
           .catch(error => {
             Loading.hide();
+            // eslint-disable-next-line
             console.log(error)
           });
     },
@@ -109,6 +111,7 @@ export default Vue.extend({
               }
             })
             .catch(error => {
+              // eslint-disable-next-line
               console.log(error)
             });
     }

@@ -163,7 +163,8 @@
                     })
                     .catch(error => {
                         Loading.hide();
-                        console.log(error)
+                      // eslint-disable-next-line
+                      console.log(error)
                     });
             },
             editWatering() {
