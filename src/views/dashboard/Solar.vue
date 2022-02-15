@@ -107,6 +107,34 @@ export default Vue.extend({
             show: false
           }
         },
+        annotations:{
+          points:[
+            {
+              id: 'east',
+              x: 650,
+              y: 215,
+              marker: {size: 0},
+              label: {text: "Východ", style: {cssClass: ''}}
+            }, {
+            id: 'west',
+            x: 10,
+            y: 215,
+            marker: {size: 0},
+            label: {text: "Západ", style: {cssClass: ''}}
+          }, {
+            id: 'north',
+            x: 345,
+            y: 0,
+            marker: {size: 0},
+            label: {text: "Sever", style: {cssClass: ''}}
+          }, {
+            id: 'south',
+            x: 345,
+            y: 430,
+            marker: {size: 0},
+            label: {text: "Juh", style: {cssClass: ''}}
+          }]
+        },
         tooltip: {
           custom: function (_ref: any) {
             return (
@@ -155,8 +183,7 @@ export default Vue.extend({
             series['data'] = [[response.data['pos']['x'], response.data['pos']['y']]];
             this.posSeries.push(series);
             var movement: Array<String> = response.data['movement'];
-            var movement: Array<String> = response.data['movement'];
-            this.blinkIfNeeded(movement,true)
+            this.blinkIfNeeded(movement)
             Loading.hide();
           })
           .catch(error => {
@@ -177,7 +204,7 @@ export default Vue.extend({
               data[0][0] = response.data['pos']['x'];
               data[0][1] = response.data['pos']['y'];
               let chart: any = this.$refs.chart;
-              chart.refresh()
+              chart.updateSeries(data);
             }
             var movement: Array<String> = response.data['movement'];
             this.blinkIfNeeded(movement)
@@ -193,62 +220,61 @@ export default Vue.extend({
       }
       return false;
     },
-    calculate(movement: Array<String>, direction: string, annotation: any, previousState: boolean, updater:Function) {
+    calculate(movement: Array<String>, direction: string, previousState: boolean, updater:Function) {
       var containsDirection = this.contains(movement, direction);
       if (previousState !== containsDirection) {
         updater(containsDirection);
-        if (containsDirection) annotation.label.style.cssClass = 'blink';
-        return true;
-      }
-      return false;
-    },
-    blinkIfNeeded(movement: Array<String>, initial:boolean= false) {
-      let chart: any = this.$refs.chart;
 
-      let east = {
-        id: 'east',
-        x: 650,
-        y: 215,
-        marker: {size: 0},
-        label: {text: "Východ", style: {cssClass: ''}}
-      };
-      let west = {
-        id: 'west',
-        x: 10,
-        y: 215,
-        marker: {size: 0},
-        label: {text: "Západ", style: {cssClass: ''}}
-      };
-      let north = {
-        id: 'north',
-        x: 345,
-        y: 0,
-        marker: {size: 0},
-        label: {text: "Sever", style: {cssClass: ''}}
-      };
-      let south = {
-        id: 'south',
-        x: 345,
-        y: 430,
-        marker: {size: 0},
-        label: {text: "Juh", style: {cssClass: ''}}
-      };
-      if (initial || this.calculate(movement, 'WEST', west, this.west,(val:boolean)=> this.west=val)) {
-        chart.removeAnnotation(west.id);
-        chart.addPointAnnotation(west, true)
       }
-      if (initial || this.calculate(movement, 'EAST', east, this.east,(val:boolean)=> this.east=val)) {
-        chart.removeAnnotation(east.id);
-        chart.addPointAnnotation(east, true)
-      }
-      if (initial || this.calculate(movement, 'NORTH', north, this.north, (val:boolean)=> this.north=val)) {
-        chart.removeAnnotation(north.id);
-        chart.addPointAnnotation(north, true)
-      }
-      if (initial || this.calculate(movement, 'SOUTH', south, this.south,(val:boolean)=> this.south=val)) {
-        chart.removeAnnotation(south.id);
-        chart.addPointAnnotation(south, true)
-      }
+    },
+    blinkIfNeeded(movement: Array<String>) {
+      let chart: any = this.$refs.chart;
+      var change=false;
+      this.calculate(movement, 'WEST', this.west,(val:boolean)=> {
+        change=true;
+        this.west=val;
+        var cssClass = this.posOptions.annotations.points[1].label.style.cssClass;
+        if (val) {
+          cssClass =cssClass + ' blink';
+        } else {
+          cssClass = cssClass.replace(' blink','');
+        }
+        this.posOptions.annotations.points[1].label.style.cssClass = cssClass;
+      });
+      this.calculate(movement, 'EAST',  this.east,(val:boolean)=> {
+        change=true;
+        this.east=val;
+        var cssClass = this.posOptions.annotations.points[0].label.style.cssClass;
+        if (val) {
+          cssClass =cssClass + ' blink';
+        } else {
+          cssClass = cssClass.replace(' blink','');
+        }
+        this.posOptions.annotations.points[0].label.style.cssClass = cssClass;
+      });
+      this.calculate(movement, 'NORTH',  this.north, (val:boolean)=> {
+        change=true;
+        this.north=val;
+        var cssClass = this.posOptions.annotations.points[2].label.style.cssClass;
+        if (val) {
+          cssClass =cssClass + ' blink';
+        } else {
+          cssClass = cssClass.replace(' blink','');
+        }
+        this.posOptions.annotations.points[2].label.style.cssClass = cssClass;
+      });
+      this.calculate(movement, 'SOUTH', this.south,(val:boolean)=> {
+        change=true;
+        this.south =val;
+        var cssClass = this.posOptions.annotations.points[3].label.style.cssClass;
+        if (val) {
+          cssClass =cssClass + ' blink';
+        } else {
+          cssClass = cssClass.replace(' blink','');
+        }
+        this.posOptions.annotations.points[3].label.style.cssClass = cssClass;
+      });
+      if (change) chart.updateOptions(this.posOptions,false,false,false);
     }
   },
   mounted(): void {
