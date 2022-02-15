@@ -204,7 +204,7 @@ export default Vue.extend({
               data[0][0] = response.data['pos']['x'];
               data[0][1] = response.data['pos']['y'];
               let chart: any = this.$refs.chart;
-              chart.updateSeries(data);
+              chart.refresh();
             }
             var movement: Array<String> = response.data['movement'];
             this.blinkIfNeeded(movement)

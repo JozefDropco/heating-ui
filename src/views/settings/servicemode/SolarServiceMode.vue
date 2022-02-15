@@ -1,6 +1,6 @@
 <template>
   <div class="marginLeft5rem marginTop5rem">
-    <q-toggle v-model="state" :label="$t('serviceModeState')"/>
+    <q-toggle v-model="state" :label="$t('serviceModeState')" @input="handleStateChange"/>
     <div>
       <br/>
       <br/>
@@ -116,9 +116,10 @@ export default Vue.extend({
           });
       if (this.active) setTimeout(this.loadCurrentState,1000)
     },
-    handleStateChange() {
+    handleStateChange(val:boolean) {
       Loading.show();
-      axios.post(cfg.BASE_URL + "solar/serviceMode?state=" + this.state)
+      this.state=val
+      axios.post(cfg.BASE_URL + "solar/serviceMode?state=" + val)
           .then(response => {
             this.state = response.data.state;
             Loading.hide();
@@ -151,11 +152,6 @@ export default Vue.extend({
             // eslint-disable-next-line
             console.log(error)
           });
-    }
-  },
-  watch: {
-    state: function () {
-      this.handleStateChange();
     }
   },
   mounted(): void {

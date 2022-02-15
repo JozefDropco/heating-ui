@@ -36,6 +36,13 @@
           </q-popup-edit>
         </q-td>
         <q-td key="refCd" :props="props">{{ props.row.refCd }}</q-td>
+        <q-td key="orderId" :props="props">
+          {{ props.row.orderId }}
+          <q-popup-edit v-model="props.row.orderId" title="Upraviť" buttons label-set="Uložiť"
+                        label-cancel="Zavrieť" @save="(v,iv)=>editMeasureplace(props.row)">
+            <q-input float-label="Poradie" v-model="props.row.orderId" type="number"/>
+          </q-popup-edit>
+        </q-td>
         <q-td key="deviceId" :props="props">
           {{ props.row.deviceId }}
           <q-popup-edit v-model="props.row.deviceId" persistent title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
@@ -54,6 +61,7 @@
         </q-toolbar>
         <div class="layout-padding">
           <q-input stack-label="Meno" v-model="name"/>
+          <q-input stack-label="Poradie" v-model="orderId"/>
           <q-select stack-label="ID zariadenia" :options="freeDeviceIds" v-model="deviceId"/>
           <br/>
           <q-btn
@@ -87,59 +95,12 @@ export default Vue.extend({
     return {
       name: "",
       refCd: "",
+      orderId: 1,
       deviceId: "",
       selected: [],
       freeDeviceIds: [],
       addPopupDisplayed: false,
       tempSeries: [],
-      options: {
-        chart: {
-          type: 'line',
-          stacked: false,
-          height: 350,
-          zoom: {
-            type: 'x',
-            enabled: true,
-            autoScaleYaxis: true
-          },
-          toolbar: {
-            autoSelected: 'zoom'
-          }
-        },
-        dataLabels: {
-          enabled: false
-        },
-        markers: {
-          size: 0,
-        },
-        title: {
-          text: 'Teplota',
-          align: 'left'
-        },
-        yaxis: {
-          type: 'number',
-          title: {
-            text: 'Teplota'
-          },
-        },
-        xaxis: {
-          type: 'datetime',
-          labels: {
-            format: 'dd. MM. yyyy'
-          },
-          minHeight: 120,
-          maxHeight: 120
-        },
-        legend: {
-          position: 'top'
-        },
-        tooltip: {
-          x: {
-            show: true,
-            format: 'dd. MM. yyyy HH:mm'
-          },
-        }
-      },
       fromDate: new Date(),
       toDate: new Date(),
       tempColumns: [
@@ -155,6 +116,12 @@ export default Vue.extend({
           label: 'Unikátny kľúč',
           align: 'left',
           field: 'refCd',
+          sortable: true
+        },{
+          name: 'orderId',
+          label: 'Poradie',
+          align: 'left',
+          field: 'orderId',
           sortable: true
         }, {
           name: 'deviceId',
@@ -199,6 +166,7 @@ export default Vue.extend({
       let data: any = {};
       data['name'] = this.name;
       data['deviceId'] = this.deviceId;
+      data['orderId'] = this.orderId;
       axios.post(cfg.BASE_URL + "temp/measurePlace", data, {method: "post"})
           .then(response => {
             this.loadCurrentState();
