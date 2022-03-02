@@ -157,10 +157,9 @@ export default Vue.extend({
           sortable: true,
           format: (secs:any) => {
             var minutes = Math.floor(secs / 60);
-            secs = secs % 60;
             var hours = Math.floor(minutes / 60)
             minutes = minutes % 60;
-            return `${("0" + hours).slice(-2)}:${("0" + minutes).slice(-2)}:${("0" + secs).slice(-2)}`;
+            return `${hours}:${("0" + minutes).slice(-2)}`;
           }
         }, {
           name: 'count',
