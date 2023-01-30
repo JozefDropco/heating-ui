@@ -34,7 +34,7 @@ export default Vue.extend({
             autoSelected: 'zoom'
           }
         },
-        colors:['#FEB019','#FF4560','#008FFB','#00E396'],
+        colors:['#FEB019','#FF4560','#008FFB','#00E396','#4B371C'],
         dataLabels: {
           enabled: false
         },
