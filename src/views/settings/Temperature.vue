@@ -43,6 +43,13 @@
             <q-input float-label="Poradie" v-model="props.row.orderId" type="number"/>
           </q-popup-edit>
         </q-td>
+        <q-td key="adjustmentTemp" :props="props">
+          {{ props.row.adjustmentTemp }}
+          <q-popup-edit v-model="props.row.adjustmentTemp" title="Upraviť" buttons label-set="Uložiť"
+                        label-cancel="Zavrieť" @save="(v,iv)=>editMeasureplace(props.row)">
+            <q-input float-label="Úprava teploty o" v-model="props.row.adjustmentTemp" type="number"/>
+          </q-popup-edit>
+        </q-td>
         <q-td key="deviceId" :props="props">
           {{ props.row.deviceId }}
           <q-popup-edit v-model="props.row.deviceId" persistent title="Upraviť" buttons label-set="Uložiť" label-cancel="Zavrieť"
@@ -62,6 +69,7 @@
         <div class="layout-padding">
           <q-input stack-label="Meno" v-model="name"/>
           <q-input stack-label="Poradie" v-model="orderId"/>
+          <q-input stack-label="Úprava teploty o" v-model="adjustmentTemp"/>
           <q-select stack-label="ID zariadenia" :options="freeDeviceIds" v-model="deviceId"/>
           <br/>
           <q-btn
@@ -96,6 +104,7 @@ export default Vue.extend({
       name: "",
       refCd: "",
       orderId: 1,
+      adjustmentTemp: 0.0,
       deviceId: "",
       selected: [],
       freeDeviceIds: [],
@@ -166,6 +175,7 @@ export default Vue.extend({
       let data: any = {};
       data['name'] = this.name;
       data['deviceId'] = this.deviceId;
+      data['adjustmentTemp'] = this.adjustmentTemp;
       data['orderId'] = this.orderId;
       axios.post(cfg.BASE_URL + "temp/measurePlace", data, {method: "post"})
           .then(response => {
